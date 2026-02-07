@@ -20,3 +20,14 @@ export interface SmartSuggestion {
   numbers: number[];
   explanation?: string;
 }
+
+export interface SimulationResult {
+  firstPlace: number;
+  secondPlace: number;
+  thirdPlace: number;
+  fourthPlace: number;
+  totalEarnings: number;
+  investment: number;
+  winRate: number;
+  roi: number;
+}
