@@ -14,7 +14,7 @@ export interface FrequencyData {
   count: number;
 }
 
-export type ViewState = 'dashboard' | 'generator' | 'analytics' | 'history';
+export type ViewState = 'dashboard' | 'generator' | 'analytics' | 'history' | 'tickets';
 
 export interface SmartSuggestion {
   numbers: number[];
@@ -30,4 +30,12 @@ export interface SimulationResult {
   investment: number;
   winRate: number;
   roi: number;
+}
+
+export interface SavedTicket {
+  id: string;
+  date: string;
+  numbers: number[];
+  type: 'simple' | 'multiple7';
+  matches?: number[];
 }
