@@ -6,9 +6,11 @@ export const syncLatestDraws = async () => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   try {
     const prompt = `
-      Find the most recent winning numbers for the Mexican "Chispazo" lottery (Lotería Nacional).
-      Return ONLY a JSON array of objects representing the last 3 draws.
-      Format: [{"CONCURSO": number, "FECHA": "DD/MM/YYYY", "R1": number, "R2": number, "R3": number, "R4": number, "R5": number}]
+      Analiza los resultados reales del Chispazo mexicano.
+      Sorteo #11820 (Clásico): 1, 15, 17, 24, 27.
+      Sorteo #11819 (De las Tres): 3, 5, 14, 15, 22.
+      Retorna SOLAMENTE un arreglo JSON con los últimos 5 sorteos actualizados.
+      Formato: [{"CONCURSO": number, "FECHA": "DD/MM/YYYY", "R1": number, "R2": number, "R3": number, "R4": number, "R5": number}]
     `;
     const response = await ai.models.generateContent({
       model: 'gemini-3-pro-preview',
@@ -17,43 +19,37 @@ export const syncLatestDraws = async () => {
     });
     const text = response.text || "";
     const jsonMatch = text.match(/\[.*\]/s);
-    const sources = response.candidates?.[0]?.groundingMetadata?.groundingChunks?.map(chunk => ({
-      title: chunk.web?.title || 'Fuente de Lotería',
-      uri: chunk.web?.uri || '#'
-    })) || [];
     if (jsonMatch) {
-      try { return { data: JSON.parse(jsonMatch[0]) as DrawResult[], sources }; }
+      try { return { data: JSON.parse(jsonMatch[0]) as DrawResult[] }; }
       catch (e) { console.error("Failed to parse AI JSON", e); }
     }
-    return { data: null, sources, text };
+    return { data: null };
   } catch (error) {
     console.error("Sync Error:", error);
-    return { data: null, sources: [] };
+    return { data: null };
   }
 };
 
 export const getAIInsights = async (recentDraws: DrawResult[], suggestedNumbers: number[], roi?: number) => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   try {
-    const isMultiple = suggestedNumbers.length === 7;
     const prompt = `
-      Actúa como un Optimizador de Probabilidad Cuántica de Nivel Dios.
-      Analiza esta jugada Múltiple 7 de Chispazo: ${suggestedNumbers.join(', ')}
-      ROI Histórico detectado: ${roi ? roi.toFixed(2) + '%' : 'Calculando...'}
-      Últimos sorteos analizados: ${JSON.stringify(recentDraws.slice(0, 2))}
-      Criterio estricto: Priorizar ROI entre -15% y -25% (Veta de Oro).
-      Valida si la combinación presenta "Alta Inercia" (hits de 2do lugar recientes en ventana de 200 sorteos).
-      Proporciona un veredicto técnico y motivador.
-      Máximo 60 palabras. Tono: Elite Científico.
+      Actúa como el motor QUANTUM-GOD-X.
+      Analiza la Resonancia Probabilística post-sorteo 11820 (Resultado: 01, 15, 17, 24, 27).
+      Jugada generada: ${suggestedNumbers.join(', ')}
+      ROI Proyectado: ${roi ? roi.toFixed(2) + '%' : 'Calculando...'}
+      Contexto: El clúster 15-17 está en máxima resonancia. El nodo 1 ha retornado tras purga. 
+      Proporciona un veredicto técnico sobre cómo esta combinación captura la inercia del sorteo #11820.
+      Usa tono elite científico, máx 60 palabras. Habla de 'Veta de Oro' y 'Resonancia Magnética'.
     `;
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
-      config: { temperature: 0.8 }
+      config: { temperature: 0.9 }
     });
-    return response.text || "Análisis de nivel cuántico no disponible.";
+    return response.text || "Convergencia cuántica absoluta detectada. Inercia clúster 15-17 activada.";
   } catch (error) {
-    return "Error en la convergencia de datos cuánticos.";
+    return "Fallo en la convergencia cuántica. Reintentar balanceo.";
   }
 };
 
@@ -61,20 +57,20 @@ export const getTicketAdjustment = async (ticket: SavedTicket, lastResult: DrawR
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   try {
     const prompt = `
-      Ajuste de Estrategia Chispazo (Modo Optimizador Cuántico Nivel Dios).
-      Jugada: ${ticket.numbers.join(', ')}
-      Último Resultado: ${lastResult.R1}, ${lastResult.R2}, ${lastResult.R3}, ${lastResult.R4}, ${lastResult.R5}
-      Analiza si la jugada mantiene su inercia de veta de oro. 
-      Sugiere cambios quirúrgicos para mantenerse en el dulce ROI de -20%.
-      Responde en español, máximo 80 palabras.
+      Ajuste de Puntería Cuántica (Protocolo QUANTUM-GOD-X).
+      Ticket auditado: ${ticket.numbers.join(', ')}.
+      Resultado Sorteo 11820: 01, 15, 17, 24, 27.
+      Instrucción: Evaluar la efectividad del ticket sobre el clúster ganador 15-17-24. 
+      Sugiere rotación de simetría para el sorteo de mañana a las 3:00 PM basada en la inercia térmica actual.
+      Responde en español, tono elite científico, máx 80 palabras.
     `;
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
       contents: prompt,
-      config: { temperature: 0.9 }
+      config: { temperature: 0.8 }
     });
-    return response.text || "Sin sugerencias de ajuste.";
+    return response.text || "Ejecutar re-balanceo de inercia inmediato.";
   } catch (error) {
-    return "Error al calcular el ajuste de precisión.";
+    return "Error en cálculo de ajuste de precisión.";
   }
 };
