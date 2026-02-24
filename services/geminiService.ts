@@ -1,14 +1,45 @@
 
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, ThinkingLevel } from "@google/genai";
 import { DrawResult, SavedTicket } from "../types";
+
+export const getDeepQuantumAnalysis = async (recentDraws: DrawResult[]) => {
+  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  try {
+    const prompt = `
+      SISTEMA: QUANTUM-GOD-X DEEP THINKING MODE.
+      CONTEXTO: Sorteo Chispazo Clásico 21:15 (Hoy 23 de Febrero).
+      ÚLTIMOS RESULTADOS: ${JSON.stringify(recentDraws.slice(0, 10))}
+      
+      INSTRUCCIÓN: Realiza un análisis exhaustivo de la inercia térmica y resonancia de clústeres.
+      Determina la combinación de 7 números (Múltiple 7) con mayor probabilidad de éxito para el sorteo de hoy a las 9 PM.
+      Explica la lógica matemática detrás de la selección (frecuencias, vacíos probabilísticos, saltos cuánticos).
+      
+      RETORNA:
+      1. La combinación sugerida.
+      2. Justificación técnica detallada.
+      Usa tono elite científico.
+    `;
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.1-pro-preview',
+      contents: prompt,
+      config: { 
+        thinkingConfig: { thinkingLevel: ThinkingLevel.HIGH }
+      }
+    });
+    return response.text || "Error en la convergencia de pensamiento profundo.";
+  } catch (error) {
+    console.error("Deep Analysis Error:", error);
+    return "Fallo en el motor de pensamiento profundo. Reintentar sincronización.";
+  }
+};
 
 export const syncLatestDraws = async () => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   try {
     const prompt = `
       Analiza los resultados reales del Chispazo mexicano.
-      Sorteo #11820 (Clásico): 1, 15, 17, 24, 27.
-      Sorteo #11819 (De las Tres): 3, 5, 14, 15, 22.
+      Sorteo #11845 (Clásico): 5, 14, 18, 24, 25.
+      Sorteo #11844 (De las Tres): 6, 13, 23, 24, 25.
       Retorna SOLAMENTE un arreglo JSON con los últimos 5 sorteos actualizados.
       Formato: [{"CONCURSO": number, "FECHA": "DD/MM/YYYY", "R1": number, "R2": number, "R3": number, "R4": number, "R5": number}]
     `;
@@ -35,11 +66,11 @@ export const getAIInsights = async (recentDraws: DrawResult[], suggestedNumbers:
   try {
     const prompt = `
       Actúa como el motor QUANTUM-GOD-X.
-      Analiza la Resonancia Probabilística post-sorteo 11820 (Resultado: 01, 15, 17, 24, 27).
+      Analiza la Resonancia Probabilística post-sorteo 11845 (Resultado: 05, 14, 18, 24, 25).
       Jugada generada: ${suggestedNumbers.join(', ')}
       ROI Proyectado: ${roi ? roi.toFixed(2) + '%' : 'Calculando...'}
-      Contexto: El clúster 15-17 está en máxima resonancia. El nodo 1 ha retornado tras purga. 
-      Proporciona un veredicto técnico sobre cómo esta combinación captura la inercia del sorteo #11820.
+      Contexto: El clúster 05-14-24 está en máxima resonancia. 
+      Proporciona un veredicto técnico sobre cómo esta combinación captura la inercia del sorteo #11845.
       Usa tono elite científico, máx 60 palabras. Habla de 'Veta de Oro' y 'Resonancia Magnética'.
     `;
     const response = await ai.models.generateContent({
@@ -59,9 +90,9 @@ export const getTicketAdjustment = async (ticket: SavedTicket, lastResult: DrawR
     const prompt = `
       Ajuste de Puntería Cuántica (Protocolo QUANTUM-GOD-X).
       Ticket auditado: ${ticket.numbers.join(', ')}.
-      Resultado Sorteo 11820: 01, 15, 17, 24, 27.
-      Instrucción: Evaluar la efectividad del ticket sobre el clúster ganador 15-17-24. 
-      Sugiere rotación de simetría para el sorteo de mañana a las 3:00 PM basada en la inercia térmica actual.
+      Resultado Sorteo 11845: 05, 14, 18, 24, 25.
+      Instrucción: Evaluar la efectividad del ticket sobre el clúster ganador 05-14-24. 
+      Sugiere rotación de simetría para el sorteo de mañana basada en la inercia térmica actual.
       Responde en español, tono elite científico, máx 80 palabras.
     `;
     const response = await ai.models.generateContent({

@@ -2,9 +2,10 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ViewState, DrawResult, SimulationResult, SavedTicket } from './types';
 import { loadHistoricalData, calculateFrequencies, generateSmartCombination, generateEliteMultiple7, runSimulation } from './utils/dataHelper';
-import { getAIInsights, syncLatestDraws, getTicketAdjustment } from './services/geminiService';
+import { getAIInsights, syncLatestDraws, getTicketAdjustment, getDeepQuantumAnalysis } from './services/geminiService';
 import FrequencyChart from './components/FrequencyChart';
 import NumberBall from './components/NumberBall';
+import Markdown from 'react-markdown';
 
 const App: React.FC = () => {
   const [data, setData] = useState<DrawResult[]>([]);
@@ -15,6 +16,8 @@ const App: React.FC = () => {
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [simResult, setSimResult] = useState<SimulationResult | null>(null);
+  const [deepAnalysis, setDeepAnalysis] = useState<string | null>(null);
+  const [isDeepLoading, setIsDeepLoading] = useState(false);
   
   const [myTickets, setMyTickets] = useState<SavedTicket[]>([]);
   const [ticketStats, setTicketStats] = useState<Record<string, SimulationResult>>({});
@@ -25,11 +28,11 @@ const App: React.FC = () => {
     setData(historical);
     setLoading(false);
     
-    // AUDITORÍA DE TICKETS REALES (Sincronizado sorteo 11820)
+    // AUDITORÍA DE TICKETS REALES (Sincronizado sorteo 11845)
     const auditTickets: SavedTicket[] = [
-      { id: 'TIKET-11820-AUDIT', date: '10/02/2026', numbers: [1, 8, 15, 17, 20, 24, 27], type: 'multiple7' },
-      { id: 'TIKET-11819-USER', date: '10/02/2026', numbers: [2, 13, 14, 15, 17, 25, 27], type: 'multiple7' },
-      { id: 'QUANTUM-EVO-X', date: '09/02/2026', numbers: [15, 16, 17, 21, 24, 26, 28], type: 'multiple7' }
+      { id: 'TIKET-11845-AUDIT', date: '23/02/2026', numbers: [5, 14, 18, 24, 25, 6, 13], type: 'multiple7' },
+      { id: 'TIKET-11844-USER', date: '22/02/2026', numbers: [6, 13, 23, 24, 25, 4, 17], type: 'multiple7' },
+      { id: 'QUANTUM-ULTRA-Z', date: '22/02/2026', numbers: [4, 6, 9, 17, 21, 23, 25], type: 'multiple7' }
     ];
     setMyTickets(auditTickets);
     
@@ -75,6 +78,14 @@ const App: React.FC = () => {
     setIsAiLoading(false);
   };
 
+  const handleDeepAnalysis = async () => {
+    setIsDeepLoading(true);
+    setDeepAnalysis(null);
+    const result = await getDeepQuantumAnalysis(data);
+    setDeepAnalysis(result);
+    setIsDeepLoading(false);
+  };
+
   const handleSaveTicket = () => {
     if (suggestion.length === 0) return;
     const newId = `QS-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
@@ -93,7 +104,7 @@ const App: React.FC = () => {
 
   const handleAdjustTicket = async (ticket: SavedTicket) => {
     const lastResult = data[0];
-    setTicketAdjustment(prev => ({ ...prev, [ticket.id]: "Calculando rotación post-11820..." }));
+    setTicketAdjustment(prev => ({ ...prev, [ticket.id]: "Calculando rotación post-11845..." }));
     const adjustment = await getTicketAdjustment(ticket, lastResult);
     setTicketAdjustment(prev => ({ ...prev, [ticket.id]: adjustment }));
   };
@@ -132,20 +143,20 @@ const App: React.FC = () => {
              <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <h2 className="text-4xl font-black tracking-tighter uppercase italic text-white">QUANTUM-GOD-X</h2>
-                  <p className="text-slate-400 font-mono text-xs uppercase">Sincronización: Sorteo #11820 Clásico (Feb 10, 21:15)</p>
+                  <p className="text-slate-400 font-mono text-xs uppercase">Sincronización: Sorteo #11845 Clásico (Feb 23, 21:15)</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="bg-rose-500/10 text-rose-400 px-4 py-2 rounded-full border border-rose-500/20 text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
-                    <span className="w-2 h-2 bg-rose-500 rounded-full animate-ping"></span> Inercia Térmica: 15, 17
+                    <span className="w-2 h-2 bg-rose-500 rounded-full animate-ping"></span> Inercia Térmica: 05, 14, 24
                   </span>
                   <div className="bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-full border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest">Resonancia Óptima</div>
                 </div>
              </header>
              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
-                   <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Resultado #11820</span>
+                   <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Resultado #11845</span>
                    <div className="flex gap-2 mt-4 flex-wrap">
-                      {[1, 15, 17, 24, 27].map(n => <NumberBall key={n} number={n} size="sm" />)}
+                      {[5, 14, 18, 24, 25].map(n => <NumberBall key={n} number={n} size="sm" />)}
                    </div>
                 </div>
                 <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-xl relative group">
@@ -156,11 +167,26 @@ const App: React.FC = () => {
                 <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-xl flex items-center justify-between">
                    <div>
                     <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Resonancia Clúster</span>
-                    <div className="text-xl font-bold text-white uppercase tracking-tighter">15-17 Sincronizado</div>
+                    <div className="text-xl font-bold text-white uppercase tracking-tighter">05-14-24 Sincronizado</div>
                    </div>
                    <i className="fas fa-atom text-3xl text-amber-500/20 animate-spin-slow"></i>
                 </div>
              </div>
+
+             <div className="bg-slate-900/50 border border-slate-800 p-10 rounded-[3rem] flex flex-col md:flex-row items-center justify-between gap-8">
+                <div className="space-y-2">
+                   <h3 className="text-2xl font-black text-white uppercase italic tracking-tighter">¿Buscas la mejor opción para hoy 9 PM?</h3>
+                   <p className="text-slate-400 italic">Activa el motor de pensamiento profundo para un análisis exhaustivo del sorteo Clásico.</p>
+                </div>
+                <button 
+                  onClick={() => { setView('generator'); handleDeepAnalysis(); }}
+                  className="bg-amber-600 hover:bg-amber-500 text-white px-10 py-5 rounded-3xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-amber-600/30 transition-all active:scale-95 flex items-center gap-3"
+                >
+                   <i className="fas fa-brain"></i>
+                   Deep Analysis 21:15
+                </button>
+             </div>
+
              <FrequencyChart data={calculateFrequencies(data).slice(0, 15)} />
           </div>
         )}
@@ -171,7 +197,7 @@ const App: React.FC = () => {
             <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 bg-slate-900/50 p-10 rounded-[3rem] border border-slate-800 shadow-2xl backdrop-blur-sm">
               <div className="space-y-2">
                 <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">Cartera de Auditoría</h2>
-                <p className="text-slate-400 font-medium italic">Monitoreo de hits post-sorteo #11820.</p>
+                <p className="text-slate-400 font-medium italic">Monitoreo de hits post-sorteo #11845.</p>
               </div>
               <div className="flex flex-wrap gap-8 items-center">
                  <div className="text-center">
@@ -187,7 +213,7 @@ const App: React.FC = () => {
             <div className="grid grid-cols-1 gap-10">
               {myTickets.map((ticket) => {
                 const stats = ticketStats[ticket.id];
-                const lastDrawNums = [1, 15, 17, 24, 27];
+                const lastDrawNums = [5, 14, 18, 24, 25];
                 const hitsLatest = ticket.numbers.filter(n => lastDrawNums.includes(n)).length;
 
                 return (
@@ -279,6 +305,33 @@ const App: React.FC = () => {
                     <button onClick={handleGenerate} className={`px-16 py-8 rounded-[3rem] font-black uppercase tracking-[0.3em] text-sm transition-all shadow-2xl active:scale-95 bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/40`}>
                       Generar para Sorteo Mañana
                     </button>
+
+                    <div className="mt-12 pt-12 border-t border-slate-800 w-full">
+                       <button 
+                         onClick={handleDeepAnalysis} 
+                         disabled={isDeepLoading}
+                         className="flex items-center gap-4 mx-auto bg-slate-900 hover:bg-slate-800 border border-slate-700 px-10 py-6 rounded-[2.5rem] transition-all group"
+                       >
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${isDeepLoading ? 'bg-amber-600 animate-spin' : 'bg-slate-800 group-hover:bg-amber-600'} transition-colors`}>
+                             <i className={`fas ${isDeepLoading ? 'fa-spinner' : 'fa-brain'} text-white`}></i>
+                          </div>
+                          <div className="text-left">
+                             <span className="block text-[10px] font-black text-amber-500 uppercase tracking-widest">Deep Thinking Mode</span>
+                             <span className="block text-white font-bold text-lg tracking-tighter uppercase italic">Análisis Profundo 9 PM</span>
+                          </div>
+                       </button>
+
+                       {deepAnalysis && (
+                         <div className="mt-10 p-10 bg-slate-950 border border-amber-500/20 rounded-[3rem] text-left animate-in fade-in slide-in-from-top-4 duration-700">
+                            <h4 className="text-amber-500 font-black text-xs uppercase tracking-[0.4em] mb-6 flex items-center gap-3 italic">
+                               <i className="fas fa-microchip"></i> Veredicto de Pensamiento Profundo
+                            </h4>
+                            <div className="markdown-body prose prose-invert max-w-none text-slate-300 italic leading-relaxed">
+                               <Markdown>{deepAnalysis}</Markdown>
+                            </div>
+                         </div>
+                       )}
+                    </div>
                  </div>
                ) : (
                  <div className="w-full animate-in zoom-in-95 duration-700">
@@ -325,7 +378,7 @@ const App: React.FC = () => {
            <div className="space-y-10 animate-in fade-in duration-700">
               <header>
                 <h2 className="text-5xl font-black tracking-tighter uppercase italic text-white">Archivo Central</h2>
-                <p className="text-slate-400 font-mono text-sm uppercase italic">Auditoría Real: Sorteo 11820 Clásico (Feb 10).</p>
+                <p className="text-slate-400 font-mono text-sm uppercase italic">Auditoría Real: Sorteo 11845 Clásico (Feb 23).</p>
               </header>
               <div className="bg-slate-900 border border-slate-800 rounded-[4rem] overflow-hidden shadow-2xl">
                  <div className="overflow-x-auto">
@@ -339,13 +392,13 @@ const App: React.FC = () => {
                        </thead>
                        <tbody className="divide-y divide-slate-800/30">
                           {data.slice(0, 15).map(draw => (
-                            <tr key={draw.CONCURSO} className={`hover:bg-slate-800/20 transition-colors group ${draw.CONCURSO === 11820 ? 'bg-amber-500/[0.06]' : ''}`}>
+                            <tr key={draw.CONCURSO} className={`hover:bg-slate-800/20 transition-colors group ${draw.CONCURSO === 11845 ? 'bg-amber-500/[0.06]' : ''}`}>
                                <td className="px-10 py-10 font-black text-amber-500 text-2xl italic">#{draw.CONCURSO}</td>
-                               <td className="px-10 py-10 text-slate-300 text-sm font-bold uppercase tracking-tighter">{draw.FECHA} {draw.CONCURSO === 11820 ? '21:15' : '15:00'}</td>
+                               <td className="px-10 py-10 text-slate-300 text-sm font-bold uppercase tracking-tighter">{draw.FECHA} {draw.CONCURSO === 11845 ? '21:15' : '15:00'}</td>
                                <td className="px-10 py-10">
                                   <div className="flex justify-center gap-4">
                                      {[draw.R1, draw.R2, draw.R3, draw.R4, draw.R5].map((n, idx) => (
-                                       <span key={idx} className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-black border shadow-inner ${draw.CONCURSO === 11820 ? 'bg-amber-600 text-white border-amber-500/50 shadow-amber-500/20 animate-pulse' : 'bg-slate-950 text-slate-300 border-slate-800'}`}>{n}</span>
+                                       <span key={idx} className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-black border shadow-inner ${draw.CONCURSO === 11845 ? 'bg-amber-600 text-white border-amber-500/50 shadow-amber-500/20 animate-pulse' : 'bg-slate-950 text-slate-300 border-slate-800'}`}>{n}</span>
                                      ))}
                                   </div>
                                </td>

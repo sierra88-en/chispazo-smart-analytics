@@ -1,8 +1,25 @@
 
 import { DrawResult, FrequencyData, SimulationResult } from "../types";
 
-// Historial real actualizado con el sorteo 11820 (01, 15, 17, 24, 27)
+// Historial real actualizado con el sorteo 11845 (05, 14, 18, 24, 25)
 const REAL_HISTORY_RAW: DrawResult[] = [
+  { CONCURSO: 11845, FECHA: '23/02/2026', R1: 5, R2: 14, R3: 18, R4: 24, R5: 25 },
+  { CONCURSO: 11844, FECHA: '22/02/2026', R1: 6, R2: 13, R3: 23, R4: 24, R5: 25 },
+  { CONCURSO: 11843, FECHA: '22/02/2026', R1: 4, R2: 6, R3: 9, R4: 17, R5: 21 },
+  { CONCURSO: 11842, FECHA: '21/02/2026', R1: 3, R2: 10, R3: 14, R4: 22, R5: 23 },
+  { CONCURSO: 11841, FECHA: '21/02/2026', R1: 2, R2: 5, R3: 17, R4: 26, R5: 27 },
+  { CONCURSO: 11840, FECHA: '20/02/2026', R1: 3, R2: 6, R3: 16, R4: 17, R5: 20 },
+  { CONCURSO: 11839, FECHA: '20/02/2026', R1: 12, R2: 14, R3: 18, R4: 19, R5: 20 },
+  { CONCURSO: 11838, FECHA: '19/02/2026', R1: 3, R2: 14, R3: 16, R4: 21, R5: 22 },
+  { CONCURSO: 11837, FECHA: '19/02/2026', R1: 2, R2: 4, R3: 7, R4: 10, R5: 14 },
+  { CONCURSO: 11836, FECHA: '18/02/2026', R1: 8, R2: 9, R3: 18, R4: 22, R5: 25 },
+  { CONCURSO: 11835, FECHA: '18/02/2026', R1: 1, R2: 2, R3: 14, R4: 24, R5: 26 },
+  { CONCURSO: 11834, FECHA: '17/02/2026', R1: 7, R2: 9, R3: 12, R4: 15, R5: 18 },
+  { CONCURSO: 11833, FECHA: '17/02/2026', R1: 3, R2: 7, R3: 16, R4: 17, R5: 18 },
+  { CONCURSO: 11832, FECHA: '16/02/2026', R1: 3, R2: 5, R3: 9, R4: 10, R5: 28 },
+  { CONCURSO: 11831, FECHA: '16/02/2026', R1: 14, R2: 16, R3: 20, R4: 21, R5: 27 },
+  { CONCURSO: 11830, FECHA: '15/02/2026', R1: 3, R2: 5, R3: 6, R4: 12, R5: 20 },
+  { CONCURSO: 11829, FECHA: '15/02/2026', R1: 2, R2: 17, R3: 20, R4: 22, R5: 26 },
   { CONCURSO: 11820, FECHA: '10/02/2026', R1: 1, R2: 15, R3: 17, R4: 24, R5: 27 },
   { CONCURSO: 11819, FECHA: '10/02/2026', R1: 3, R2: 5, R3: 14, R4: 15, R5: 22 },
   { CONCURSO: 11818, FECHA: '09/02/2026', R1: 7, R2: 8, R3: 20, R4: 24, R5: 28 },
@@ -82,15 +99,15 @@ export const generateEliteMultiple7 = (data: DrawResult[]): { numbers: number[],
   let bestSim: SimulationResult | null = null;
   const confidenceWindow = data.slice(0, 200);
 
-  // RE-CALIBRACIÓN POST-SORTEO 11820
-  // Nodos 15 y 17 en Resonancia Alta. Nodo 01 en Reversión.
-  const resonanceCluster = [1, 15, 17, 24, 27, 8, 20]; 
+  // RE-CALIBRACIÓN POST-SORTEO 11845
+  // Nodos 05, 14, 18, 24, 25 en Resonancia Alta. 
+  const resonanceCluster = [5, 14, 18, 24, 25, 6, 13, 23, 4, 17]; 
 
   const getQuantumScore = (nums: number[]) => {
     let score = 0;
     nums.forEach(n => {
       if (resonanceCluster.includes(n)) score += 4;
-      if ([3, 5, 22].includes(n)) score -= 2; // Penalización por dispersión post-rebote
+      if ([1, 15, 27, 26, 3, 10, 22].includes(n)) score -= 1; // Penalización por enfriamiento post-pico
     });
     return score;
   };
