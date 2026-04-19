@@ -14,7 +14,7 @@ export interface FrequencyData {
   count: number;
 }
 
-export type ViewState = 'dashboard' | 'generator' | 'analytics' | 'history' | 'tickets';
+export type ViewState = 'dashboard' | 'generator' | 'analytics' | 'history' | 'tickets' | 'solar' | 'knowledge' | 'docs' | 'vision' | 'backtesting';
 
 export interface SmartSuggestion {
   numbers: number[];
@@ -38,4 +38,40 @@ export interface SavedTicket {
   numbers: number[];
   type: 'simple' | 'multiple7';
   matches?: number[];
+}
+
+export interface ShannonEntropyProtocol {
+  entropyBit: number;
+  detectedSet: 'Set A (Ligeros)' | 'Set B (Medios)' | 'Set C (Pesados)' | 'Set D (Mixtos)';
+  rotationCycle: string;
+  activeVector: number[];
+  forensicFilter: number[];
+  explanation: string;
+}
+
+export type SwarmNode = 'Density' | 'Thermal' | 'SetRotation' | 'MechanicalFatigue';
+
+export interface SwarmConsciousness {
+  activeNode: SwarmNode;
+  nodeStatus: Record<SwarmNode, 'Active' | 'Standby' | 'Calibrating'>;
+  entropyH: number;
+  roiProyectado: number;
+  forensicAlert?: string;
+  vetaDeOro: boolean;
+}
+
+export interface SolarCycleProtocol {
+  backpropagation: string;
+  bloqueAlfa: {
+    multiple7: number[];
+    elite5: number[];
+    certeza: number;
+    justification: string;
+  };
+  bloqueOmega: {
+    multiple7: number[];
+    elite5: number[];
+    certeza: number;
+    justification: string;
+  };
 }
