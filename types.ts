@@ -36,7 +36,7 @@ export interface SavedTicket {
   id: string;
   date: string;
   numbers: number[];
-  type: 'simple' | 'multiple7';
+  type: 'simple' | 'multiple6' | 'multiple7';
   matches?: number[];
 }
 
@@ -74,4 +74,13 @@ export interface SolarCycleProtocol {
     certeza: number;
     justification: string;
   };
+}
+
+export interface ResonanceScanResult {
+  lastDraw: number[];
+  terminalVelocities: Record<number, string>;
+  avgWeeklyVelocity: string;
+  resonanceDeviation: string;
+  verdict: string;
+  explanation: string;
 }

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ViewState, DrawResult, SimulationResult, SavedTicket, ShannonEntropyProtocol, SwarmConsciousness } from './types';
-import { loadHistoricalData, calculateFrequencies, generateSmartCombination, generateEliteMultiple7, runSimulation, calculateThermalInertia, getHistoryBySchedule, generateQuantum5, executeShannonAnalysis, executeElasticReboundCalculation, executeSwarmAnalysis, findWearSingularity, updateBallWeights, executeVortexCycleAnalysis, BALL_WEIGHTS, generateMandelCondensation, calculateHumanBiasScore, executeTripleScenarioSimulation, calculateDebtAndResonance, executeDeepSimulation } from './utils/dataHelper';
+import { loadHistoricalData, calculateFrequencies, generateSmartCombination, generateEliteMultiple6, generateEliteMultiple7, runSimulation, calculateThermalInertia, getHistoryBySchedule, generateQuantum5, executeShannonAnalysis, executeElasticReboundCalculation, executeSwarmAnalysis, findWearSingularity, updateBallWeights, executeVortexCycleAnalysis, BALL_WEIGHTS, generateMandelCondensation, calculateHumanBiasScore, executeTripleScenarioSimulation, calculateDebtAndResonance, executeDeepSimulation, executeMarkovXContrast, calculateAntifragility, generateAntifragileVector, generateCausalVector, executeMaletinSignatureScanner } from './utils/dataHelper';
 import { getSorteoDate } from './utils/timeSync';
 import { getAIInsights, syncLatestDraws, getTicketAdjustment, getDeepQuantumAnalysis, getMarketingProof, getSearchGroundingAnalysis, getExecutiveReport, getVoiceBriefing, getStrategicFutureOpinion, getShannonEntropyAnalysis, getMarketSentimentAnalysis, getElasticReboundAnalysis } from './services/geminiService';
 import FrequencyChart from './components/FrequencyChart';
@@ -98,7 +98,7 @@ const App: React.FC = () => {
   const { hablar, playBeep } = useQuantumVoice();
   const [data, setData] = useState<DrawResult[]>([]);
   const [view, setView] = useState<ViewState>('dashboard');
-  const [genMode, setGenMode] = useState<'simple' | 'multiple7' | 'quantum'>('quantum');
+  const [genMode, setGenMode] = useState<'simple' | 'multiple6' | 'multiple7' | 'quantum'>('quantum');
   const [loading, setLoading] = useState(true);
   const [shannonData, setShannonData] = useState<ShannonEntropyProtocol | null>(null);
   const [swarmData, setSwarmData] = useState<SwarmConsciousness | null>(null);
@@ -149,6 +149,14 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
   const [isDebtLoading, setIsDebtLoading] = useState(false);
   const [deepSimResults, setDeepSimResults] = useState<{ topNodes: any[], inevitableCombo: number[], iterations: number, explanation: string } | null>(null);
   const [isDeepSimLoading, setIsDeepSimLoading] = useState(false);
+  const [markovContrast, setMarkovContrast] = useState<{ cluster: number[], stability: string, pressureFactor: number, verdict: string, explanation: string } | null>(null);
+  const [isMarkovLoading, setIsMarkovLoading] = useState(false);
+  const [antifragilityResult, setAntifragilityResult] = useState<{ score: number, status: string, convexity: number } | null>(null);
+  const [isAntifragileLoading, setIsAntifragileLoading] = useState(false);
+  const [antifragileSuggestionResult, setAntifragileSuggestionResult] = useState<{ numbers: number[], score: number, scenario: string } | null>(null);
+  const [isCausalLoading, setIsCausalLoading] = useState(false);
+  const [causalDiagnostics, setCausalDiagnostics] = useState<string | null>(null);
+  const [maletinSignature, setMaletinSignature] = useState<{ currentRegime: string, stabilityScore: number, detectedSignature: string } | null>(null);
 
   // Listen for OAuth success
   useEffect(() => {
@@ -205,6 +213,10 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
     const shannon = executeShannonAnalysis(historical);
     setShannonData(shannon);
     
+    // Firma de Maletín por Historial
+    const signatureRes = executeMaletinSignatureScanner(historical);
+    setMaletinSignature(signatureRes);
+    
     // Inicializar Enjambre de Conciencia
     const swarm = executeSwarmAnalysis(historical, 4.5); // Peso promedio inicial
     setSwarmData(swarm);
@@ -251,6 +263,27 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
     localStorage.setItem('quantum_god_tickets', JSON.stringify(myTickets));
   }, [myTickets]);
 
+  const handleAntifragileGeneration = async () => {
+    try {
+      setIsAntifragileLoading(true);
+      playBeep();
+      
+      // Delay para efecto dramático Quantum
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      
+      const res = generateAntifragileVector(data);
+      setAntifragileSuggestionResult(res);
+      setSuggestion(res.numbers);
+      setSimResult(runSimulation(res.numbers, data));
+      
+      hablar(`Vector Antifrágil desplegado. Este conjunto de nodos no solo resiste la volatilidad, sino que se alimenta de ella. Prepárate para la distorsión del maletín.`);
+    } catch (error) {
+      console.error("Error generating antifragile vector:", error);
+    } finally {
+      setIsAntifragileLoading(false);
+    }
+  };
+
   const markovMatrix = useMemo(() => calculateMarkovTransitions(data), [data]);
 
   const poolSummary = useMemo(() => {
@@ -287,6 +320,11 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
 
       if (genMode === 'quantum') {
         const elite = generateEliteMultiple7(filteredData);
+        newNums = elite.numbers;
+        sim = elite.simulation;
+        cert = elite.certeza;
+      } else if (genMode === 'multiple6') {
+        const elite = generateEliteMultiple6(filteredData);
         newNums = elite.numbers;
         sim = elite.simulation;
         cert = elite.certeza;
@@ -415,6 +453,110 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
     }
   };
 
+  const handleMarkovXContrast = async () => {
+    try {
+      setIsMarkovLoading(true);
+      setMarkovContrast(null);
+      
+      hablar("Iniciando Protocolo Markov-X de Contraste. Auditando clúster contra presión barométrica de CDMX.");
+      
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      
+      const cluster = [22, 26, 23, 25, 21];
+      const result = executeMarkovXContrast(data, cluster);
+      setMarkovContrast(result);
+      
+      hablar(`Auditoría finalizada. Veredicto: ${result.verdict === 'GO_CRITICAL' ? 'Ataque Crítico Autorizado' : 'Ajustar Vectores'}. Estabilidad del ${result.stability} por ciento.`);
+    } catch (error) {
+      console.error("Error in Markov-X Contrast:", error);
+    } finally {
+      setIsMarkovLoading(false);
+    }
+  };
+
+  const handleAntifragileVector = async () => {
+    try {
+      setIsAntifragileLoading(true);
+      setAntifragilityResult(null);
+      
+      hablar("Iniciando Protocolo Búnker Antifrágil. Buscando respuesta convexa ante el desorden del ducto.");
+      
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      const result = generateAntifragileVector(data);
+      const antifragility = calculateAntifragility(result.numbers, data);
+      
+      setSuggestion(result.numbers);
+      setAntifragilityResult(antifragility);
+      setSimResult(runSimulation(result.numbers, data));
+      
+      hablar(`Vector Antifrágil detectado. Convexidad de ${antifragility.convexity.toFixed(4)}. El sistema prospera bajo la volatilidad actual.`);
+      setView('generator');
+    } catch (error) {
+      console.error("Error in Antifragile Vector:", error);
+    } finally {
+      setIsAntifragileLoading(false);
+    }
+  };
+
+  const handleCausalVector = async () => {
+    try {
+      setIsCausalLoading(true);
+      setCausalDiagnostics(null);
+      
+      hablar("Ejecutando Inferencia Causal Judea Pearl. Filtrando correlaciones espurias del maletín.");
+      
+      await new Promise(resolve => setTimeout(resolve, 2500));
+      
+      const result = generateCausalVector(data);
+      
+      setSuggestion(result.numbers);
+      setCausalDiagnostics(result.diagnostics);
+      setSimResult(runSimulation(result.numbers, data));
+      
+      hablar("Motor causal sincronizado. Se han identificado los vectores físicos de eyección por masa y temperatura.");
+      setView('generator');
+    } catch (error) {
+      console.error("Error in Causal Vector:", error);
+    } finally {
+      setIsCausalLoading(false);
+    }
+  };
+
+  const handleGenerateTen = async () => {
+    if (isAiLoading) return;
+    setIsAiLoading(true);
+    setSaveSuccess(null);
+    
+    try {
+      // Forzamos modo noche para las 9 PM si el usuario está en modo preventivo
+      const filteredData = getHistoryBySchedule(data, true);
+      const newTickets: SavedTicket[] = [];
+      const timestamp = new Date().toLocaleDateString('es-MX');
+      
+      for (let i = 0; i < 10; i++) {
+        const q5 = generateQuantum5(filteredData);
+        const newId = `BUNKER-${Math.random().toString(36).substr(2, 4).toUpperCase()}-${i+1}`;
+        newTickets.push({
+          id: newId,
+          date: timestamp,
+          numbers: q5.numbers,
+          type: 'simple'
+        });
+      }
+      
+      setMyTickets(prev => [...newTickets, ...prev]);
+      setSuggestion(newTickets[0].numbers);
+      setSimResult(runSimulation(newTickets[0].numbers, data));
+      hablar("Protocolo Búnker activado. He generado diez combinaciones blindadas para las nueve de la noche. Inyectando vectores de succión optimizados.");
+      setView('tickets');
+    } catch (error) {
+      console.error("Error generating ten:", error);
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
+
   const handleDeepAnalysis = async () => {
     try {
       setIsDeepLoading(true);
@@ -469,7 +611,7 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
       id: newId,
       date: new Date().toLocaleDateString('es-MX'),
       numbers: [...suggestion],
-      type: 'multiple7'
+      type: suggestion.length === 7 ? 'multiple7' : suggestion.length === 6 ? 'multiple6' : 'simple'
     };
     
     const stats = runSimulation(newTicket.numbers, data);
@@ -862,6 +1004,9 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
 
                 return (
                   <div key={ticket.id} className={`p-10 rounded-[4rem] border relative overflow-hidden group transition-all duration-500 shadow-2xl bg-slate-900/80 border-slate-800`}>
+                    {calculateAntifragility(ticket.numbers, data).status === 'ANTIFRÁGIL' && (
+                      <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-orange-500 to-amber-500 animate-pulse"></div>
+                    )}
                     <div className="flex flex-col lg:flex-row gap-10 items-start lg:items-center justify-between">
                       <div className="space-y-6">
                         <div className="flex items-center gap-4">
@@ -885,7 +1030,7 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 w-full lg:w-auto">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 w-full lg:w-auto">
                          <div className="bg-slate-950/50 p-6 rounded-3xl border border-slate-800 text-center">
                             <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Aciertos (#11863)</span>
                             <span className={`text-2xl font-black ${hitsLatest >= 2 ? 'text-emerald-400' : 'text-slate-600'}`}>{hitsLatest}</span>
@@ -897,6 +1042,12 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
                          <div className="bg-slate-950/50 p-6 rounded-3xl border border-slate-800 text-center">
                             <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Confianza AI</span>
                             <span className="text-2xl font-black text-white italic">{hitsLatest >= 2 ? 'RESILIENTE' : 'BAJA'}</span>
+                         </div>
+                         <div className="bg-slate-950/50 p-6 rounded-3xl border border-slate-800 text-center">
+                            <span className="block text-[8px] font-black text-slate-500 uppercase tracking-widest mb-1">Antifragilidad</span>
+                            <span className={`text-2xl font-black italic ${calculateAntifragility(ticket.numbers, data).status === 'ANTIFRÁGIL' ? 'text-orange-500' : 'text-slate-600'}`}>
+                              {calculateAntifragility(ticket.numbers, data).status}
+                            </span>
                          </div>
                          <button onClick={() => handleAdjustTicket(ticket)} className="bg-slate-800 hover:bg-slate-700 text-white rounded-3xl p-6 flex flex-col items-center justify-center transition-all shadow-xl group/btn">
                            <i className="fas fa-sync-alt group-hover/btn:rotate-180 transition-transform duration-700 mb-1"></i>
@@ -941,6 +1092,30 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
         {/* VIEW: GENERATOR */}
         {view === 'generator' && (
            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+            {/* Notificación de Victoria Reciente (Reconocimiento de Captura) */}
+            <div className="animate-in zoom-in duration-1000">
+              <div className="flex flex-col md:flex-row items-center gap-8 bg-emerald-500/10 border border-emerald-500/30 p-10 rounded-[4rem] shadow-[0_0_80px_rgba(16,185,129,0.15)] relative overflow-hidden">
+                <div className="absolute top-0 right-0 p-4 opacity-10">
+                   <i className="fas fa-trophy text-9xl -rotate-12"></i>
+                </div>
+                <div className="w-20 h-20 rounded-full bg-emerald-500 shadow-[0_0_30px_rgba(16,185,129,0.5)] flex items-center justify-center text-white text-3xl animate-bounce shrink-0 relative z-10">
+                  <i className="fas fa-trophy"></i>
+                </div>
+                <div className="text-center md:text-left relative z-10">
+                  <div className="flex items-center justify-center md:justify-start gap-3 mb-2">
+                    <span className="bg-emerald-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Éxito Confirmado</span>
+                    <h3 className="text-emerald-400 font-black text-2xl italic tracking-tighter uppercase">
+                      ¡Nos fue excelente hoy! (Sorteo 11968)
+                    </h3>
+                  </div>
+                  <p className="text-slate-300 text-lg max-w-2xl font-medium leading-tight">
+                    Felicidades por el premio de <span className="text-white font-black">$20.00</span>. Tus líneas A y B cazaron los nodos <span className="text-emerald-400">11, 16, 17 y 21</span>. 
+                    El "Efecto Sombra" fue real. El sistema está calibrado.
+                  </p>
+                </div>
+              </div>
+            </div>
+
             <header className="flex flex-col md:flex-row md:items-end justify-between gap-8">
               <div>
                 <h2 className="text-5xl font-black text-white tracking-tighter mb-2 uppercase italic">Motor de Resonancia V5.0</h2>
@@ -950,8 +1125,9 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
                 <button onClick={() => setIsNightMode(false)} className={`px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest transition-all ${!isNightMode ? 'bg-amber-600 text-white shadow-lg' : 'text-slate-400'}`}>Las Tres</button>
                 <button onClick={() => setIsNightMode(true)} className={`px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest transition-all ${isNightMode ? 'bg-amber-600 text-white shadow-lg' : 'text-slate-400'}`}>Clásico</button>
                 <div className="w-px bg-slate-800 mx-2 my-2"></div>
-                <button onClick={() => { setGenMode('simple'); setSuggestion([]); }} className={`px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest transition-all ${genMode === 'simple' ? 'bg-amber-600 text-white shadow-xl shadow-amber-600/30' : 'text-slate-400 hover:text-slate-200'}`}>Quantum 5 (Rápido)</button>
-                <button onClick={() => { setGenMode('quantum'); setSuggestion([]); }} className={`px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest transition-all ${genMode === 'quantum' ? 'bg-amber-600 text-white shadow-xl shadow-amber-600/30' : 'text-slate-400 hover:text-slate-200'}`}>Forense (GOD-X)</button>
+                <button onClick={() => { setGenMode('simple'); setSuggestion([]); }} className={`px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest transition-all ${genMode === 'simple' ? 'bg-amber-600 text-white shadow-xl shadow-amber-600/30' : 'text-slate-400 hover:text-slate-200'}`}>Quantum 5</button>
+                <button onClick={() => { setGenMode('multiple6'); setSuggestion([]); }} className={`px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest transition-all ${genMode === 'multiple6' ? 'bg-amber-600 text-white shadow-xl shadow-amber-600/30' : 'text-slate-400 hover:text-slate-200'}`}>Múltiple 6</button>
+                <button onClick={() => { setGenMode('quantum'); setSuggestion([]); }} className={`px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest transition-all ${genMode === 'quantum' ? 'bg-amber-600 text-white shadow-xl shadow-amber-600/30' : 'text-slate-400 hover:text-slate-200'}`}>Múltiple 7 (GOD-X)</button>
               </div>
             </header>
 
@@ -986,20 +1162,20 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
                       <i className={`fas fa-microchip text-5xl text-amber-500 animate-pulse`}></i>
                     </div>
                     <h3 className="text-4xl font-black text-white mb-6 uppercase tracking-tighter leading-tight italic">
-                      {genMode === 'simple' ? 'Quantum 5: Análisis de Alta Velocidad' : 'GOD-X: Veredicto Mecánico'}
+                      {genMode === 'simple' ? 'Quantum 5: Análisis Veloz' : genMode === 'multiple6' ? 'Múltiple 6: Filtro de Humedad' : 'GOD-X: Veredicto Mecánico'}
                     </h3>
                     <div className="flex flex-col items-center gap-4 mb-6 justify-center">
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                         <span className="text-[10px] font-bold uppercase tracking-widest text-emerald-500">
-                          {genMode === 'simple' ? 'Algoritmo Heurístico de Resonancia' : 'Optimización de Flujo y Masa (V5.0)'}
+                          {genMode === 'simple' ? 'Algoritmo Heurístico de Resonancia' : genMode === 'multiple6' ? 'Masa Crítica Recalibrada' : 'Optimización de Flujo y Masa (V5.0)'}
                         </span>
                       </div>
-                      {genMode === 'quantum' && (
+                      {(genMode === 'quantum' || genMode === 'multiple6') && (
                         <div className="flex items-center gap-2 px-4 py-1 rounded-full bg-amber-500/10 border border-amber-500/30">
                           <i className="fas fa-microscope text-[10px] text-amber-500"></i>
                           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-amber-500">
-                            Auditoría Activa: Nodo 16 (Desgaste Mecánico)
+                            Auditoría Activa: Nodo {genMode === 'multiple6' ? '02' : '16'} (Desgaste Mecánico)
                           </span>
                         </div>
                       )}
@@ -1007,11 +1183,16 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
                     <p className="text-slate-500 mb-12 text-lg italic">
                       {genMode === 'simple' 
                         ? 'Genera 5 coordenadas optimizadas mediante clústeres de frecuencia y ROI histórico inmediato.' 
+                        : genMode === 'multiple6' 
+                        ? 'Genera 6 coordenadas basadas en la compensación de fricción y humedad barométrica.'
                         : 'Genera un reporte de 7 coordenadas de fallo basado en la fatiga de materiales y optimización de flujo.'}
                     </p>
                     <div className="flex flex-col md:flex-row items-center gap-4 mb-12 justify-center">
                       <button onClick={handleGenerate} className={`px-16 py-8 rounded-[3rem] font-black uppercase tracking-[0.3em] text-sm transition-all shadow-2xl active:scale-95 bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/40`}>
                         Generar para Hoy ({getSorteoDate()})
+                      </button>
+                      <button onClick={handleGenerateTen} className={`px-16 py-8 rounded-[3rem] font-black uppercase tracking-[0.3em] text-sm transition-all shadow-2xl active:scale-95 bg-slate-100 hover:bg-white text-slate-900 shadow-slate-900/10`}>
+                        Protocolo Búnker: Las 10 (9 PM)
                       </button>
                       <button 
                         onClick={handleMandelCondensation} 
@@ -1044,6 +1225,30 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
                       >
                         {isDeepSimLoading ? <i className="fas fa-spinner fa-spin mr-3"></i> : <i className="fas fa-microchip mr-3"></i>}
                         Upgrade V10.0 (Gabinete)
+                      </button>
+                      <button 
+                        onClick={handleMarkovXContrast} 
+                        disabled={isMarkovLoading}
+                        className={`px-12 py-8 rounded-[3rem] font-black uppercase tracking-[0.2em] text-sm transition-all shadow-2xl active:scale-95 border-2 ${isMarkovLoading ? 'bg-slate-800 border-slate-700 text-slate-500' : 'bg-cyan-900/20 border-cyan-500/50 text-cyan-400 hover:bg-cyan-900/40'}`}
+                      >
+                        {isMarkovLoading ? <i className="fas fa-spinner fa-spin mr-3"></i> : <i className="fas fa-microscope mr-3"></i>}
+                        Contraste Markov-X
+                      </button>
+                      <button 
+                        onClick={handleAntifragileVector} 
+                        disabled={isAntifragileLoading}
+                        className={`px-12 py-8 rounded-[3rem] font-black uppercase tracking-[0.2em] text-sm transition-all shadow-2xl active:scale-95 border-2 ${isAntifragileLoading ? 'bg-slate-800 border-slate-700 text-slate-500' : 'bg-orange-900/20 border-orange-500/50 text-orange-400 hover:bg-orange-900/40'}`}
+                      >
+                        {isAntifragileLoading ? <i className="fas fa-spinner fa-spin mr-3"></i> : <i className="fas fa-shield-alt mr-3"></i>}
+                        Vector Antifrágil (Búnker)
+                      </button>
+                      <button 
+                        onClick={handleCausalVector} 
+                        disabled={isCausalLoading}
+                        className={`px-12 py-8 rounded-[3rem] font-black uppercase tracking-[0.2em] text-sm transition-all shadow-2xl active:scale-95 border-2 ${isCausalLoading ? 'bg-slate-800 border-slate-700 text-slate-500' : 'bg-emerald-900/20 border-emerald-500/50 text-emerald-400 hover:bg-emerald-900/40'}`}
+                      >
+                        {isCausalLoading ? <i className="fas fa-spinner fa-spin mr-3"></i> : <i className="fas fa-dna mr-3"></i>}
+                        Evolución Causal (Pearl)
                       </button>
                     </div>
 
@@ -1179,6 +1384,48 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
                           <p className="text-red-200/60 text-xs italic leading-relaxed text-center px-10 relative z-10">
                             "{deepSimResults.explanation}"
                           </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {markovContrast && (
+                      <div className="mt-12 w-full max-w-4xl animate-in fade-in slide-in-from-top-8 duration-700">
+                        <div className="bg-cyan-950/20 border border-cyan-500/30 p-10 rounded-[3rem] space-y-8 relative overflow-hidden">
+                          <div className="absolute top-0 right-0 p-8">
+                            <i className="fas fa-microscope text-7xl text-cyan-500/10"></i>
+                          </div>
+
+                          <div className="flex items-center justify-between border-b border-cyan-500/20 pb-6 relative z-10">
+                            <h4 className="text-cyan-400 font-black text-xl uppercase italic tracking-tighter flex items-center gap-3">
+                              <i className="fas fa-project-diagram"></i>
+                              Filtro Markov-X: Contraste Barométrico
+                            </h4>
+                            <span className={`px-4 py-2 rounded-full border text-[10px] font-black uppercase tracking-widest ${markovContrast.verdict === 'GO_CRITICAL' ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400' : 'bg-red-500/10 border-red-500/30 text-red-400'}`}>
+                              {markovContrast.verdict}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-col md:flex-row gap-8 relative z-10">
+                             <div className="flex-1 bg-black/40 border border-cyan-500/10 p-8 rounded-[2rem] space-y-4">
+                               <span className="block text-[10px] text-slate-500 font-black uppercase tracking-widest">Estabilidad de Transición</span>
+                               <div className="text-4xl font-black text-cyan-400">{markovContrast.stability}%</div>
+                               <div className="w-full bg-slate-900 h-2 rounded-full overflow-hidden">
+                                 <div className="bg-cyan-500 h-full transition-all duration-1000" style={{ width: `${markovContrast.stability}%` }}></div>
+                               </div>
+                             </div>
+
+                             <div className="flex-1 bg-black/40 border border-cyan-500/10 p-8 rounded-[2rem] space-y-4">
+                               <span className="block text-[10px] text-slate-500 font-black uppercase tracking-widest">Presión Barométrica (CDMX)</span>
+                               <div className="text-4xl font-black text-amber-500">{markovContrast.pressureFactor} atm</div>
+                               <div className="text-[10px] text-slate-500 font-bold uppercase">Estado: Ideal para Eyección de Masa Mixta</div>
+                             </div>
+                          </div>
+
+                          <div className="bg-black/80 p-8 rounded-[2rem] border border-cyan-500/5 relative z-10">
+                            <p className="text-cyan-100 italic text-sm leading-relaxed text-center">
+                              "{markovContrast.explanation}"
+                            </p>
+                          </div>
                         </div>
                       </div>
                     )}
@@ -1383,6 +1630,70 @@ Socio, he activado el protocolo de **Condensación Combinatoria**. No vamos a ju
                          </div>
                        </div>
                      )}
+                    
+                      {antifragilityResult && (
+                        <div className="max-w-2xl mx-auto mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
+                          <div className={`p-6 rounded-3xl border flex items-center gap-6 ${antifragilityResult.status === 'ANTIFRÁGIL' ? 'bg-orange-500/10 border-orange-500/30' : 'bg-slate-800 border-slate-700'}`}>
+                            <div className={`w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 font-black text-xl bg-orange-500 text-slate-950`}>
+                              H
+                            </div>
+                            <div className="text-left">
+                              <h5 className={`font-black text-[10px] uppercase tracking-widest mb-1 text-orange-400`}>
+                                Veredicto de Antifragilidad (H-Score)
+                              </h5>
+                              <p className="text-slate-300 text-xs italic leading-relaxed">
+                                Estado: <span className="font-black">{antifragilityResult.status}</span>. 
+                                Convexidad: <span className="font-black text-orange-500">+{antifragilityResult.convexity.toFixed(4)}</span>.
+                                {antifragilityResult.status === 'ANTIFRÁGIL' 
+                                  ? ' Esta combinación fortalece su probabilidad ante el ruido del ducto.' 
+                                  : ' Combinación robusta ante variaciones estándar.'}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {causalDiagnostics && (
+                        <div className="max-w-2xl mx-auto mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
+                          <div className="p-6 rounded-3xl border border-emerald-500/30 bg-emerald-500/10 flex items-center gap-6">
+                            <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 font-black text-xl bg-emerald-500 text-slate-950">
+                              <i className="fas fa-dna"></i>
+                            </div>
+                            <div className="text-left">
+                              <h5 className="font-black text-[10px] uppercase tracking-widest mb-1 text-emerald-400">
+                                Diagnóstico de Causalidad (Forense)
+                              </h5>
+                              <p className="text-slate-300 text-xs italic leading-relaxed">
+                                {causalDiagnostics}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {maletinSignature && (
+                        <div className="max-w-2xl mx-auto mb-12 animate-in fade-in slide-in-from-top-4 duration-1000 delay-300">
+                          <div className={`p-8 rounded-[3rem] border flex flex-col md:flex-row items-center gap-8 ${maletinSignature.currentRegime === 'LIGERO' ? 'bg-cyan-500/10 border-cyan-500/30' : 'bg-rose-500/10 border-rose-500/30'}`}>
+                            <div className="relative">
+                               <div className={`w-28 h-28 rounded-full border-4 flex flex-col items-center justify-center font-black animate-pulse ${maletinSignature.currentRegime === 'LIGERO' ? 'border-cyan-500 text-cyan-400' : 'border-rose-500 text-rose-400'}`}>
+                                 <span className="text-[10px] uppercase opacity-50">Régimen</span>
+                                 <span className="text-xl italic">{maletinSignature.currentRegime}</span>
+                               </div>
+                               <div className="absolute -bottom-2 -right-2 bg-slate-950 px-3 py-1 rounded-full border border-slate-800 text-[10px] font-black">
+                                 {maletinSignature.stabilityScore.toFixed(0)}% ESTABLE
+                               </div>
+                            </div>
+                            <div className="text-center md:text-left">
+                              <h5 className={`font-black text-xs uppercase tracking-[0.3em] mb-3 italic ${maletinSignature.currentRegime === 'LIGERO' ? 'text-cyan-400' : 'text-rose-400'}`}>
+                                Telemetría de Maletín (Historial Completo)
+                              </h5>
+                              <p className="text-slate-400 text-sm leading-relaxed max-w-md">
+                                {maletinSignature.detectedSignature} El análisis forense sugiere que los movimientos actuales corresponden a una peculiaridad de **Inercia Térmica**.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 max-w-6xl mx-auto text-left">
                        <div className="bg-slate-950 p-12 rounded-[4rem] border border-slate-800 shadow-2xl relative overflow-hidden group">

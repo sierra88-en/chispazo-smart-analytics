@@ -35,6 +35,14 @@ export const IntegrityStatus: React.FC = () => {
       status: 'Cifrado',
       color: 'text-purple-400',
       desc: 'SHA-256 Inmutable'
+    },
+    {
+      label: 'Protocolo Bunker',
+      value: 'Regla 5/6/7',
+      icon: Shield,
+      status: 'VERIFICADO',
+      color: 'text-emerald-400',
+      desc: 'Máx 7 Números'
     }
   ];
 
