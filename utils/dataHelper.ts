@@ -1,8 +1,23 @@
 
 import { DrawResult, FrequencyData, SimulationResult, SwarmConsciousness, SwarmNode } from "../types";
 
-// Historial real actualizado: Sorteo 11988 (05/05/2026) - Protocolo de Verdad Única
+// Historial real actualizado: Sorteo 12011 (17/05/2026) - Protocolo de Verdad Única
 const REAL_HISTORY_RAW: DrawResult[] = [
+  { CONCURSO: 12011, FECHA: '17/05/2026', R1: 1, R2: 10, R3: 11, R4: 16, R5: 23 },
+  { CONCURSO: 12010, FECHA: '16/05/2026', R1: 1, R2: 6, R3: 16, R4: 20, R5: 22 },
+  { CONCURSO: 12009, FECHA: '16/05/2026', R1: 8, R2: 11, R3: 13, R4: 17, R5: 21 },
+  { CONCURSO: 12008, FECHA: '15/05/2026', R1: 2, R2: 4, R3: 9, R4: 16, R5: 18 },
+  { CONCURSO: 12007, FECHA: '15/05/2026', R1: 8, R2: 12, R3: 16, R4: 21, R5: 27 },
+  { CONCURSO: 12006, FECHA: '14/05/2026', R1: 8, R2: 12, R3: 13, R4: 21, R5: 24 },
+  { CONCURSO: 12005, FECHA: '14/05/2026', R1: 6, R2: 8, R3: 14, R4: 20, R5: 23 },
+  { CONCURSO: 12004, FECHA: '13/05/2026', R1: 2, R2: 8, R3: 19, R4: 24, R5: 26 },
+  { CONCURSO: 12003, FECHA: '13/05/2026', R1: 1, R2: 4, R3: 7, R4: 22, R5: 28 },
+  { CONCURSO: 12002, FECHA: '12/05/2026', R1: 7, R2: 9, R3: 16, R4: 19, R5: 21 },
+  { CONCURSO: 12001, FECHA: '12/05/2026', R1: 4, R2: 7, R3: 10, R4: 12, R5: 23 },
+  { CONCURSO: 12000, FECHA: '11/05/2026', R1: 5, R2: 11, R3: 16, R4: 21, R5: 25 },
+  { CONCURSO: 11999, FECHA: '11/05/2026', R1: 4, R2: 13, R3: 15, R4: 22, R5: 27 },
+  { CONCURSO: 11998, FECHA: '10/05/2026', R1: 3, R2: 7, R3: 13, R4: 19, R5: 25 },
+  { CONCURSO: 11997, FECHA: '10/05/2026', R1: 5, R2: 12, R3: 20, R4: 22, R5: 24 },
   { CONCURSO: 11988, FECHA: '05/05/2026', R1: 4, R2: 5, R3: 8, R4: 14, R5: 18 },
   { CONCURSO: 11987, FECHA: '05/05/2026', R1: 2, R2: 9, R3: 10, R4: 16, R5: 24 },
   { CONCURSO: 11986, FECHA: '04/05/2026', R1: 3, R2: 6, R3: 11, R4: 14, R5: 28 },
@@ -52,14 +67,14 @@ const REAL_HISTORY_RAW: DrawResult[] = [
   { CONCURSO: 11942, FECHA: '12/04/2026', R1: 13, R2: 17, R3: 24, R4: 25, R5: 28 }
 ];
 
-// Mapeo de pesos oficiales (Sorteo 11988 - 05/05/2026) - RECALIBRACIÓN POST-BLOQUEO
+// Mapeo de pesos oficiales (Sorteo 12011 - 17/05/2026) - RECALIBRACIÓN POST-ESTADÍSTICA
 export let BALL_WEIGHTS: Record<number, number> = {
   1: 4.43, 2: 4.38, 3: 4.45, 4: 4.44, 5: 4.44,
   6: 4.39, 7: 4.43, 8: 4.44, 9: 4.39, 10: 4.44,
   11: 4.47, 12: 4.41, 13: 4.47, 14: 4.45, 15: 4.37,
   16: 4.42, 17: 4.43, 18: 4.45, 19: 4.46, 20: 4.42,
   21: 4.47, 22: 4.45, 23: 4.41, 24: 4.46, 25: 4.41,
-  26: 4.09, 27: 4.42, 28: 4.92 // ANCLA DETECTADA (Frecuencia de frenado)
+  26: 4.09, 27: 4.42, 28: 4.36 // Liberación del ancla detectada en 12011
 };
 
 /**
@@ -67,10 +82,10 @@ export let BALL_WEIGHTS: Record<number, number> = {
  * Aquí almacenamos la firma de masa detectada en sorteos clave para encontrar el patrón de cambio.
  */
 export const SUITCASE_HISTORY = [
+  { draw: 12011, date: '17/05/2026', weight_28: 4.36, notes: 'Maletín de Flujo Libre (Eyección 01, 11)', result: [1, 10, 11, 16, 23] },
+  { draw: 12003, date: '13/05/2026', weight_28: 4.36, notes: 'Maletín Estándar (Retorno 28)', result: [1, 4, 7, 22, 28] },
   { draw: 11988, date: '05/05/2026', weight_28: 4.92, notes: 'Anclaje detectado (4.92g)', result: [4, 5, 8, 14, 18] },
-  { draw: 11987, date: '05/05/2026', weight_28: 4.36, notes: 'Maletín Estándar', result: [2, 9, 10, 16, 24] },
-  { draw: 11986, date: '04/05/2026', weight_28: 4.36, notes: 'Maletín Estándar', result: [3, 6, 11, 14, 28] }, // Aquí salió el 28 con peso bajo
-  { draw: 11982, date: '02/05/2026', weight_28: 4.36, notes: 'Maletín Estándar', result: [3, 11, 14, 23, 24] }
+  { draw: 11986, date: '04/05/2026', weight_28: 4.36, notes: 'Maletín Estándar', result: [3, 6, 11, 14, 28] }
 ];
 
 /**
