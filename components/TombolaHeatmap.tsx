@@ -1,13 +1,21 @@
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
+import { InfectionOverlay } from './InfectionOverlay';
 
 interface TombolaHeatmapProps {
   data: { num: number; score: number }[];
   activeNumbers?: number[];
+  malwareInfections?: { num: number; score: number }[];
 }
 
-export const TombolaHeatmap: React.FC<TombolaHeatmapProps> = ({ data, activeNumbers = [] }) => {
+export const TombolaHeatmap: React.FC<TombolaHeatmapProps> = ({ 
+  data, 
+  activeNumbers = [],
+  malwareInfections = []
+}) => {
+  const [showInfectionLayer, setShowInfectionLayer] = useState(true);
+
   // Mapear los 28 números en un círculo (simulando la tómbola)
   const layout = useMemo(() => {
     const radius = 120;
@@ -28,14 +36,29 @@ export const TombolaHeatmap: React.FC<TombolaHeatmapProps> = ({ data, activeNumb
 
   return (
     <div className="bg-slate-900/80 border border-slate-800 p-8 rounded-[3rem] shadow-2xl relative overflow-hidden group">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row gap-4 justify-between sm:items-center mb-8 relative z-20">
         <div>
           <h4 className="text-white font-black text-lg tracking-tighter uppercase italic">Mapa de Calor Forense</h4>
           <p className="text-slate-500 text-[10px] uppercase tracking-widest">Distribución de Presión y Rebote (V5.0)</p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></div>
-          <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest">Nodo 16 Detectado</span>
+        <div className="flex flex-wrap items-center gap-3">
+          {malwareInfections && malwareInfections.length > 0 && (
+            <button
+              onClick={() => setShowInfectionLayer(!showInfectionLayer)}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-full border text-[9px] font-black uppercase tracking-wider transition-all select-none cursor-pointer relative z-30 ${
+                showInfectionLayer 
+                  ? 'bg-rose-500/10 border-rose-500/50 text-rose-400 hover:bg-rose-500/20 shadow-[0_0_10px_rgba(244,63,94,0.15)]' 
+                  : 'bg-slate-950/40 border-slate-800 text-slate-500 hover:text-slate-300'
+              }`}
+            >
+              <i className={`fas fa-biohazard ${showInfectionLayer ? 'animate-spin' : ''}`} style={{ animationDuration: '4s' }}></i>
+              HUD Malware: {showInfectionLayer ? 'ON' : 'OFF'}
+            </button>
+          )}
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-amber-500 animate-pulse"></div>
+            <span className="text-[9px] font-black text-amber-500 uppercase tracking-widest">Nodo 16 Detectado</span>
+          </div>
         </div>
       </div>
 
@@ -48,7 +71,7 @@ export const TombolaHeatmap: React.FC<TombolaHeatmapProps> = ({ data, activeNumb
         <div className="absolute top-1/2 left-0 w-full h-px bg-slate-800 opacity-20"></div>
         <div className="absolute top-0 left-1/2 w-px h-full bg-slate-800 opacity-20"></div>
 
-        <svg viewBox="0 0 300 300" className="w-full h-full drop-shadow-[0_0_15px_rgba(217,119,6,0.1)]">
+        <svg viewBox="0 0 300 300" className="w-full h-full drop-shadow-[0_0_15px_rgba(217,119,6,0.1)] relative z-10">
           {layout.map((point) => {
             const isActive = activeNumbers.includes(point.num);
             const isHot = point.intensity > 70;
@@ -99,8 +122,13 @@ export const TombolaHeatmap: React.FC<TombolaHeatmapProps> = ({ data, activeNumb
           })}
         </svg>
 
+        {/* Capa de Infección Malware de Red */}
+        {malwareInfections && malwareInfections.length > 0 && (
+          <InfectionOverlay data={malwareInfections} visible={showInfectionLayer} />
+        )}
+
         {/* Centro de la tómbola */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-slate-900 border border-slate-700 rounded-full flex items-center justify-center shadow-inner">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-slate-900 border border-slate-700 rounded-full flex items-center justify-center shadow-inner z-10">
            <i className="fas fa-microchip text-slate-700 text-xs"></i>
         </div>
       </div>

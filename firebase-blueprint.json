@@ -1,0 +1,102 @@
+{
+  "entities": {
+    "Draw": {
+      "title": "Draw",
+      "description": "Lottery draw results and physical ejection metrics",
+      "type": "object",
+      "properties": {
+        "CONCURSO": {
+          "type": "integer"
+        },
+        "FECHA": {
+          "type": "string"
+        },
+        "R1": {
+          "type": "integer"
+        },
+        "R2": {
+          "type": "integer"
+        },
+        "R3": {
+          "type": "integer"
+        },
+        "R4": {
+          "type": "integer"
+        },
+        "R5": {
+          "type": "integer"
+        },
+        "ordenSalida": {
+          "type": "array"
+        }
+      },
+      "required": [
+        "CONCURSO",
+        "FECHA",
+        "R1",
+        "R2",
+        "R3",
+        "R4",
+        "R5"
+      ]
+    },
+    "WeightSettings": {
+      "title": "WeightSettings",
+      "description": "Dynamic ball weights for the 28 balls under CDMX atmosphere",
+      "type": "object",
+      "properties": {
+        "weights": {
+          "type": "object"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "weights"
+      ]
+    },
+    "SuitcaseHistoryEntry": {
+      "title": "SuitcaseHistoryEntry",
+      "description": "Record of suitcase weights and physical properties during a draw",
+      "type": "object",
+      "properties": {
+        "draw": {
+          "type": "integer"
+        },
+        "date": {
+          "type": "string"
+        },
+        "weight_28": {
+          "type": "number"
+        },
+        "notes": {
+          "type": "string"
+        },
+        "result": {
+          "type": "array"
+        }
+      },
+      "required": [
+        "draw",
+        "date",
+        "weight_28",
+        "result"
+      ]
+    }
+  },
+  "firestore": {
+    "/draws/{concursoId}": {
+      "schema": "Draw",
+      "description": "The collection of synchronized/loaded draws"
+    },
+    "/settings/weights": {
+      "schema": "WeightSettings",
+      "description": "Global ball calibration weights document"
+    },
+    "/suitcaseHistory/{drawId}": {
+      "schema": "SuitcaseHistoryEntry",
+      "description": "History of suitcase entries"
+    }
+  }
+}

@@ -540,8 +540,9 @@ export const getCausalAntifragileAudit = async (recentDraws: DrawResult[], tempe
       INSTRUCCIONES CRÍTICAS:
       1. Predicción Causal (Judea Pearl): Identifica la trayectoria de menor resistencia basándote en la masa de los nodos y el arrastre cinético (Kinetic Drag).
       2. Módulo de Antifragilidad: Genera 1 "Vector Cisne Negro" (jugada de alta convexidad).
-      3. Mantenimiento Predictivo: Evalúa el coeficiente de fricción del ducto dadas las condiciones térmicas (${temperature}°C).
-      4. Sellado DocSec: Genera un hash criptográfico único para esta auditoría.
+      3. REGLA DE ORO DEL ESPECTRO 1-28: Tanto 'causalVector' como 'blackSwanVector' DEBEN consistir exactamente en 5 enteros únicos, donde cada entero esté estrictamente entre 1 y 28 (rango [1, 28] inclusivo).
+      4. Mantenimiento Predictivo: Evalúa el coeficiente de fricción del ducto dadas las condiciones térmicas (${temperature}°C).
+      5. Sellado DocSec: Genera un hash criptográfico único para esta auditoría.
       
       RETORNA UN ÚNICO BLOQUE JSON:
       {

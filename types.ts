@@ -7,6 +7,7 @@ export interface DrawResult {
   R3: number;
   R4: number;
   R5: number;
+  ordenSalida?: number[];
 }
 
 export interface FrequencyData {
@@ -58,6 +59,8 @@ export interface SwarmConsciousness {
   roiProyectado: number;
   forensicAlert?: string;
   vetaDeOro: boolean;
+  cdmxPressure?: number;
+  cdmxAltitude?: number;
 }
 
 export interface SolarCycleProtocol {
