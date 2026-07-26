@@ -15,7 +15,7 @@ export interface FrequencyData {
   count: number;
 }
 
-export type ViewState = 'dashboard' | 'generator' | 'analytics' | 'history' | 'tickets' | 'solar' | 'knowledge' | 'docs' | 'vision' | 'backtesting';
+export type ViewState = 'dashboard' | 'generator' | 'analytics' | 'history' | 'tickets' | 'solar' | 'knowledge' | 'docs' | 'vision' | 'backtesting' | 'weekly';
 
 export interface SmartSuggestion {
   numbers: number[];
@@ -86,4 +86,37 @@ export interface ResonanceScanResult {
   resonanceDeviation: string;
   verdict: string;
   explanation: string;
+}
+
+export interface NonEjectedNodeAnalysis {
+  node: number;
+  ballWeight: number;
+  weightDeltaFromOptimum: number;
+  failureReason: string;
+  aerodynamicDrag: number;
+  suggestedCalibration: string;
+}
+
+export interface FailedPredictionLogEntry {
+  concurso: number;
+  fecha: string;
+  predictedVector: number[];
+  actualResult: number[];
+  hits: number[];
+  failedNodes: number[];
+  nodeAnalyses: NonEjectedNodeAnalysis[];
+  primaryFailureCause: 'EXCESO_MASA_NEUMATICA' | 'VACIO_SUCCION_INSUFICIENTE' | 'TURBULENCIA_ROTOR' | 'DESVIACION_PESAJE_MALETIN' | 'DESPLAZAMIENTO_ENTROPICO';
+  suitcaseWeight28?: number;
+  learningAdjustmentFactor: number;
+}
+
+export interface FailedPredictionAuditResult {
+  totalEvaluatedDraws: number;
+  totalPredictions: number;
+  totalNonEjectedNodes: number;
+  averageHitRate: number;
+  topFailureCause: string;
+  globalCalibrationOffset: number;
+  learnedNodePenalties: Record<number, number>;
+  discrepancyLogs: FailedPredictionLogEntry[];
 }

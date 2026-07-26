@@ -162,6 +162,138 @@ export const KnowledgeBase: React.FC = () => {
             "La integridad del sorteo Chispazo descansa sobre leyes físicas inalterables. El uso de materiales diamagnéticos y el protocolo de pesaje SGM-PRO-06 eliminan cualquier posibilidad de manipulación electromagnética. El azar no es una variable mágica, sino el resultado de una dinámica de fluidos perfectamente calibrada que QUANTUM-GOD-X audita mediante telemetría de precisión."
           </p>
         </div>
+
+        {/* Sección Especial: Guiones y Plantillas para Compartir con Amigos / WhatsApp */}
+        <div className="mt-10 p-6 md:p-8 bg-slate-950 border border-amber-500/30 rounded-[2.5rem] relative shadow-2xl">
+          <div className="mb-6">
+            <span className="px-3.5 py-1.5 bg-amber-500/10 text-amber-400 rounded-full text-[11px] font-black uppercase tracking-widest border border-amber-500/30 inline-flex items-center gap-2">
+              <i className="fab fa-whatsapp text-emerald-400 text-sm"></i> Centro de Comunicación de Grupo
+            </span>
+            <h3 className="text-2xl font-black text-white uppercase italic mt-3 tracking-tight">
+              Explicación Oficial de Quantum GOD-X para el Equipo
+            </h3>
+            <p className="text-xs text-slate-400 mt-1 max-w-3xl">
+              Copia y envía estos textos a tus amigos por WhatsApp o úsalos de guion para nota de voz/video. Explican el origen, las bases científicas y cómo gestionamos la varianza.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Mensaje 1: Explicación Completa del Sistema */}
+            <div className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-amber-400 font-bold text-xs uppercase flex items-center gap-1.5">
+                    <i className="fas fa-book-open"></i> 1. Mensaje de Bienvenida
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-mono">WhatsApp / Texto</span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+                  Explicación amigable sobre cómo nació el proyecto, la física de la tómbola, las leyes de probabilidad y la varianza.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  const msg1 = `🚀 *¿QUÉ ES QUANTUM GOD-X Y CÓMO JUGAMOS?* 🚀
+
+Hola amigos 👋 Les platico cómo nació y cómo funciona este proyecto que desarrollamos para jugar el Chispazo de forma inteligente:
+
+💡 *1. ¿Cómo nació la idea?*
+Nació porque nos dimos cuenta de que la mayoría de la gente juega por "corazonadas", fechas de cumpleaños o números de la suerte. Eso le da toda la ventaja a la casa. Quisimos crear un sistema que jugara con *matemáticas y ciencia real*.
+
+⚙️ *2. La Ciencia detrás del Sistema (Física Real)*
+En la Lotería Nacional, las esferas no caen por magia. Usan una tómbola de aire (Smartplay). Cada bolita de hule tiene microdiferencias de peso (medidas oficialmente entre 2.2g y 5.3g). Las esferas más ligeras flotan más rápido con el flujo del aire, y las más pesadas requieren mayor presión del rotor. Quantum GOD-X registra el pesaje oficial de las valijas, las frecuencias históricas, filtros de entropía (equilibrio de pares/impares y sumas) y Cadenas de Markov para calcular qué números tienen mayor probabilidad estadística de salir juntos.
+
+🎯 *3. Áreas de Oportunidad y Riesgo Real (La Varianza)*
+En la lotería *NO existen fórmulas mágicas del 100%* en un solo boleto. Existe lo que los matemáticos llaman **Varianza**: sorteos atípicos donde la tómbola saca combinaciones raras (por ejemplo, cuando salen 3 números juntos en los 20s como el 22, 23, 27). Un solo boleto es vulnerable a la varianza.
+
+🛡️ *4. Nuestra Estrategia de Grupo*
+Para vencer la varianza no jugamos 1 boleto a lo loco: armamos una *quiniela coordinada*. Dividimos jugadas optimizadas de alta probabilidad para cubrir más espectro matemático. Si jugamos juntos de forma constante con un método disciplinado, aumentamos drásticamente nuestras probabilidades a mediano y largo plazo.
+
+¡A partir de hoy les estaré compartiendo las combinaciones calculadas del día! 📊🔥`;
+                  navigator.clipboard.writeText(msg1);
+                  alert("¡Mensaje 1 (Explicación Completa) copiado al portapapeles!");
+                }}
+                className="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
+              >
+                <i className="fas fa-copy"></i> Copiar Explicación Completa
+              </button>
+            </div>
+
+            {/* Mensaje 2: Plantilla Diaria de WhatsApp */}
+            <div className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-emerald-400 font-bold text-xs uppercase flex items-center gap-1.5">
+                    <i className="fab fa-whatsapp"></i> 2. Plantilla de Jugada Diaria
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-mono">Formato Diario</span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+                  Formato listo para copiar y pegar todos los días en el grupo de WhatsApp con las jugadas generadas por la app.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  const msg2 = `🔥 *JUGADAS QUANTUM GOD-X DEL DÍA* 🔥
+📅 *Fecha:* [Ingresar Fecha]
+🎰 *Sorteo:* Chispazo [De las tres / Clásico]
+
+🎯 *Combinaciones Recomendadas por el Algoritmo:*
+🔹 *Jugada A:* 01 - 08 - 14 - 19 - 25
+🔹 *Jugada B:* 04 - 09 - 15 - 22 - 28
+🔹 *Jugada C:* 02 - 10 - 16 - 21 - 27
+
+📈 *Resumen del Algoritmo:*
+- Entropía Shannon: Óptima (3 Impares / 2 Pares)
+- Promedio de Suma Objetivo: 72 - 88 pts
+- Filtro de Valija: Calibrado según último pesaje oficial SGM-PRO-06.
+
+💡 *Recordatorio de Grupo:* Jugamos con constancia y gestión de riesgo. ¡Mucho éxito hoy equipo! 🍀💰`;
+                  navigator.clipboard.writeText(msg2);
+                  alert("¡Plantilla Diaria de WhatsApp copiada al portapapeles!");
+                }}
+                className="w-full py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
+              >
+                <i className="fas fa-copy"></i> Copiar Plantilla Diaria
+              </button>
+            </div>
+
+            {/* Mensaje 3: Guion para Video / Nota de Voz */}
+            <div className="bg-slate-900/90 p-5 rounded-2xl border border-slate-800 flex flex-col justify-between space-y-4">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-sky-400 font-bold text-xs uppercase flex items-center gap-1.5">
+                    <i className="fas fa-microphone"></i> 3. Guion Nota de Voz / Video
+                  </span>
+                  <span className="text-[10px] text-slate-500 font-mono">60 Segundos</span>
+                </div>
+                <p className="text-[11px] text-slate-300 leading-relaxed font-sans">
+                  Guion ágil para que grabes una nota de voz o un video corto explicando el proyecto a tus compañeros de forma fresca.
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  const msg3 = `🎙️ *GUION PARA VIDEO O NOTA DE VOZ (60 seg)*:
+
+"¡Qué tal muchachos! Les hago este video rápido para platicarles del proyecto que armamos para el Chispazo: Quantum GOD-X.
+
+Miren, en vez de adivinar o jugar números al azar como la mayoría, metimos ciencia. La tómbola de la Lotería es de aire y las pelotitas tienen pequeñas diferencias de peso que están registradas en las valijas oficiales. Lo que hace nuestro sistema es auditar esos pesos, la frecuencia de salida, la entropía y las secuencias matemáticas para dar combinaciones con mucha mayor probabilidad.
+
+Ojo: En la lotería existe la varianza, ningún boleto solo te asegura el premio al 100%, pero al jugar en equipo con quinielas bien distribuidas reducimos el riesgo y aumentamos bastante las posibilidades.
+
+A partir de hoy les voy a mandar la lista de jugadas recomendadas del día para que le entremos juntos. ¡Vamos por ese premio!"`;
+                  navigator.clipboard.writeText(msg3);
+                  alert("¡Guion para Video / Nota de voz copiado al portapapeles!");
+                }}
+                className="w-full py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
+              >
+                <i className="fas fa-copy"></i> Copiar Guion de Video
+              </button>
+            </div>
+
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

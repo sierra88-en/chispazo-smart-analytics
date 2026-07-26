@@ -6,30 +6,33 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs";
-import admin from "firebase-admin";
+import { initializeApp, getApps, getApp } from "firebase/app";
+import { initializeFirestore, collection, doc, getDoc, getDocs, setDoc, query, orderBy, limit } from "firebase/firestore";
 
 dotenv.config();
 
-// Inicializar Firebase Admin
+// Inicializar Firebase (usando SDK de Cliente para evitar fallos de ADC/gRPC en contenedores Cloud Run)
 let adminDb: any = null;
 try {
   const firebaseConfigPath = path.join(process.cwd(), "firebase-applet-config.json");
   if (fs.existsSync(firebaseConfigPath)) {
     const config = JSON.parse(fs.readFileSync(firebaseConfigPath, "utf-8"));
-    if (config.projectId) {
-      admin.initializeApp({
-        projectId: config.projectId,
-      });
-      if (config.firestoreDatabaseId) {
-        adminDb = admin.firestore(config.firestoreDatabaseId);
-      } else {
-        adminDb = admin.firestore();
-      }
-      console.log("Firebase Admin inicializado en Firestore DB:", config.firestoreDatabaseId || "(default)");
-    }
+    console.log("[Firebase Client as Admin] Detectado config. ProjectId:", config.projectId, "DatabaseId:", config.firestoreDatabaseId);
+    
+    const app = getApps().length === 0 
+      ? initializeApp(config) 
+      : getApp();
+        
+    adminDb = initializeFirestore(app, {
+      experimentalForceLongPolling: true,
+    }, config.firestoreDatabaseId || "(default)");
+    
+    console.log("[Firebase Client as Admin] Inicializado exitosamente usando Web API Key y Firestore DB:", config.firestoreDatabaseId || "(default)");
+  } else {
+    console.warn("[Firebase Client as Admin] Archivo de configuración firebase-applet-config.json no encontrado.");
   }
-} catch (error) {
-  console.error("Error al inicializar Firebase Admin:", error);
+} catch (error: any) {
+  console.error("[Firebase Client as Admin] Error crítico al inicializar Firebase Client:", error);
 }
 
 const __filename = fileURLToPath(import.meta.url);
@@ -59,19 +62,21 @@ app.get("/api/health", (req, res) => {
 app.get("/api/synced-data", async (req, res) => {
   if (adminDb) {
     try {
-      const drawsSnap = await adminDb.collection("draws").orderBy("CONCURSO", "desc").limit(100).get();
+      const drawsQuery = query(collection(adminDb, "draws"), orderBy("CONCURSO", "desc"), limit(100));
+      const drawsSnap = await getDocs(drawsQuery);
       const draws: any[] = [];
-      drawsSnap.forEach((doc: any) => {
-        draws.push(doc.data());
+      drawsSnap.forEach((docSnap) => {
+        draws.push(docSnap.data());
       });
 
-      const weightsDoc = await adminDb.collection("settings").doc("weights").get();
-      const weights = weightsDoc.exists ? (weightsDoc.data()?.weights || {}) : {};
+      const weightsDoc = await getDoc(doc(adminDb, "settings", "weights"));
+      const weights = weightsDoc.exists() ? (weightsDoc.data()?.weights || {}) : {};
 
-      const suitcaseSnap = await adminDb.collection("suitcaseHistory").orderBy("draw", "desc").limit(100).get();
+      const suitcaseQuery = query(collection(adminDb, "suitcaseHistory"), orderBy("draw", "desc"), limit(100));
+      const suitcaseSnap = await getDocs(suitcaseQuery);
       const suitcaseHistory: any[] = [];
-      suitcaseSnap.forEach((doc: any) => {
-        suitcaseHistory.push(doc.data());
+      suitcaseSnap.forEach((docSnap) => {
+        suitcaseHistory.push(docSnap.data());
       });
 
       // Si tenemos datos en Firestore (al menos un campo no vacío), los retornamos
@@ -117,32 +122,222 @@ function extractAndParseJSON(rawBody: string): any {
   return JSON.parse(cleaned);
 }
 
+// NORMALIZADOR ULTRA-ROBUSTO Y ADAPTATIVO PARA WEBHOOKS DE MAKE.COM
+function normalizeDrawingPayload(raw: any): any {
+  if (!raw || typeof raw !== "object") return raw;
+  const result: any = {};
+
+  // 1. EXTRAER CONCURSO / SORTEO (Tolera: sorteo, concurso, id, draw, idSorteo, etc.)
+  const sorteoKeys = ["sorteo", "concurso", "id", "idSorteo", "numeroSorteo", "draw", "concursoId", "Concurso", "Sorteo", "Raffle", "raffle"];
+  let foundSorteo: number | null = null;
+  for (const k of sorteoKeys) {
+    if (raw[k] !== undefined && raw[k] !== null) {
+      const numericVal = Number(String(raw[k]).replace(/\D/g, ""));
+      if (!isNaN(numericVal) && numericVal > 0) {
+        foundSorteo = numericVal;
+        break;
+      }
+    }
+  }
+  result.sorteo = foundSorteo;
+
+  // 2. EXTRAER FECHA (Tolera: fecha, date, fechaSorteo, etc.)
+  const fechaKeys = ["fecha", "date", "fechaSorteo", "fecha_sorteo", "drawDate", "concursoFecha", "Fecha", "Date"];
+  let foundFecha = null;
+  for (const k of fechaKeys) {
+    if (raw[k] !== undefined && raw[k] !== null && String(raw[k]).trim() !== "") {
+      foundFecha = String(raw[k]).trim();
+      break;
+    }
+  }
+  result.fecha = foundFecha || new Date().toLocaleDateString('es-MX');
+
+  // 3. EXTRAER COMBINACIÓN (resultado/números)
+  // Soporta arreglos directos [1,2,3,4,5], cadenas separadas por comas/guiones "1,2,3,4,5"
+  // y campos individuales como r1, r2, r3, r4, r5 o b1, b2, b3, b4, b5
+  const combKeys = ["combinacion", "combinación", "resultado", "winningNumbers", "numeros", "números", "numbers", "nums", "Combinacion", "Resultado", "Combination", "combination"];
+  let rawComb: any = null;
+  for (const k of combKeys) {
+    if (raw[k] !== undefined && raw[k] !== null) {
+      rawComb = raw[k];
+      break;
+    }
+  }
+
+  let finalComb: number[] = [];
+
+  if (Array.isArray(rawComb)) {
+    finalComb = rawComb.map(x => Number(String(x).trim())).filter(x => !isNaN(x) && x >= 1 && x <= 28);
+  } else if (typeof rawComb === "string" && rawComb.trim() !== "") {
+    finalComb = rawComb.split(/[\s,;\-\/]+/).map(x => Number(x.trim())).filter(x => !isNaN(x) && x >= 1 && x <= 28);
+  }
+
+  // Si no se encuentra en las palabras claves, intentar mapear de campos individuales (R1-R5, n1-n5, etc.)
+  if (finalComb.length !== 5) {
+    const posKeys = [
+      ["r1", "r2", "r3", "r4", "r5"],
+      ["R1", "R2", "R3", "R4", "R5"],
+      ["bola1", "bola2", "bola3", "bola4", "bola5"],
+      ["bola_1", "bola_2", "bola_3", "bola_4", "bola_5"],
+      ["b1", "b2", "b3", "b4", "b5"],
+      ["num1", "num2", "num3", "num4", "num5"],
+      ["n1", "n2", "n3", "n4", "n5"]
+    ];
+
+    for (const group of posKeys) {
+      const candidates = group.map(key => Number(raw[key])).filter(x => !isNaN(x) && x >= 1 && x <= 28);
+      if (candidates.length === 5) {
+        finalComb = candidates;
+        break;
+      }
+    }
+  }
+
+  result.combinacion = finalComb.slice(0, 5);
+
+  // 4. EXTRAER ORDEN DE SALIDA
+  const ordenKeys = ["ordenSalida", "orden_salida", "orden", "sortOrder", "physicalOrder", "OrdenSalida"];
+  let rawOrden: any = null;
+  for (const k of ordenKeys) {
+    if (raw[k] !== undefined && raw[k] !== null) {
+      rawOrden = raw[k];
+      break;
+    }
+  }
+
+  let finalOrden: number[] = [];
+  if (Array.isArray(rawOrden)) {
+    finalOrden = rawOrden.map(x => Number(String(x).trim())).filter(x => !isNaN(x) && x >= 1 && x <= 28);
+  } else if (typeof rawOrden === "string" && rawOrden.trim() !== "") {
+    finalOrden = rawOrden.split(/[\s,;\-\/]+/).map(x => Number(x.trim())).filter(x => !isNaN(x) && x >= 1 && x <= 28);
+  }
+
+  if (finalOrden.length !== 5) {
+    finalOrden = [...result.combinacion];
+  }
+  result.ordenSalida = finalOrden.slice(0, 5);
+
+  // 5. EXTRAER TIPO DE MALETÍN
+  const maletinKeys = ["tipoMaletin", "tipo_maletin", "maletin", "suitcaseType", "suitcase_type", "Briefcase type", "BriefcaseType", "briefcase_type", "briefcaseType"];
+  let foundMaletin = null;
+  for (const k of maletinKeys) {
+    if (raw[k] !== undefined && raw[k] !== null && String(raw[k]).trim() !== "") {
+      foundMaletin = String(raw[k]).trim();
+      break;
+    }
+  }
+  result.tipoMaletin = foundMaletin || "Flujo Libre";
+
+  // 6. EXTRAER PESAJES (Bolas de 1 a 28)
+  const pesajesKeys = ["pesajes", "weights", "suitcaseWeights", "pesos", "pesajesBolas", "Weighings", "weighings"];
+  let rawPesajes: any = null;
+  for (const k of pesajesKeys) {
+    if (raw[k] !== undefined && raw[k] !== null && typeof raw[k] === "object") {
+      rawPesajes = raw[k];
+      break;
+    }
+  }
+
+  const finalPesajes: Record<string, number> = {};
+
+  if (rawPesajes) {
+    for (const [key, val] of Object.entries(rawPesajes)) {
+      const keyLower = key.toLowerCase().trim();
+      if (keyLower === "she was 28" || keyLower === "she_was_28" || keyLower === "bola 28" || keyLower === "bola_28") {
+        finalPesajes["28"] = Number(val);
+        continue;
+      }
+      const numKey = Number(key.replace(/\D/g, ""));
+      if (numKey >= 1 && numKey <= 28 && !isNaN(Number(val))) {
+        finalPesajes[String(numKey)] = Number(val);
+      }
+    }
+  }
+
+  // Buscar pesajes en las llaves raíz del objeto plano (ej. "peso28": 4.41, "b28_p": 4.31)
+  for (const [key, val] of Object.entries(raw)) {
+    const keyLower = key.toLowerCase().trim();
+    if (['sorteo', 'concurso', 'id', 'combinacion', 'resultado', 'juego'].some(x => keyLower.includes(x))) continue;
+
+    if (keyLower === "she was 28" || keyLower === "she_was_28" || keyLower === "bola 28" || keyLower === "bola_28") {
+      finalPesajes["28"] = Number(val);
+      continue;
+    }
+
+    const match = key.match(/\d+/);
+    if (match) {
+      const numKey = Number(match[0]);
+      if (numKey >= 1 && numKey <= 28 && !isNaN(Number(val))) {
+        const numVal = Number(val);
+        if (numVal > 3.0 && numVal < 6.0) {
+          finalPesajes[String(numKey)] = numVal;
+        }
+      }
+    }
+  }
+
+  result.pesajes = finalPesajes;
+
+  // 7. EXTRAER JUEGO
+  const juegoKeys = ["juego", "product", "tipoSorteo", "tipoJuego", "category", "game", "Juego"];
+  let foundJuego = "";
+  for (const k of juegoKeys) {
+    if (raw[k] !== undefined && raw[k] !== null) {
+      foundJuego = String(raw[k]).trim();
+      break;
+    }
+  }
+  result.juego = foundJuego;
+
+  return result;
+}
+
+// Guardar historial diagnóstico para el puente Make.com
+function logWebhookDiagnostic(status: "success" | "error" | "ignored", details: string, rawPayload: any, normalizedPayload: any) {
+  try {
+    const diagPath = path.join(process.cwd(), "webhook_diagnostics.json");
+    const diagLog = {
+      lastReceivedAt: new Date().toISOString(),
+      status,
+      details,
+      rawPayload,
+      normalizedPayload
+    };
+    fs.writeFileSync(diagPath, JSON.stringify(diagLog, null, 2), "utf-8");
+  } catch (error) {
+    console.error("Error writing webhook diagnostics:", error);
+  }
+}
+
 async function handleSync(payload: any, res: any) {
-  let chispazoPayload = payload;
+  let chispazoPayload = normalizeDrawingPayload(payload);
 
   // Si corresponde a un lote/lista de eventos de tómbolas enviados por Make
   if (Array.isArray(payload)) {
     const found = payload.find((item: any) => {
-      const gName = String(item.juego || item.product || item.tipoSorteo || "").toLowerCase();
-      return gName.includes("chispazo") || 
-            (Array.isArray(item.combinacion) && item.combinacion.length === 5 && item.combinacion.every((n: any) => Number(n) >= 1 && Number(n) <= 28));
+      const normalizedItem = normalizeDrawingPayload(item);
+      return normalizedItem.sorteo && normalizedItem.combinacion && normalizedItem.combinacion.length === 5;
     });
     if (found) {
-      chispazoPayload = found;
+      chispazoPayload = normalizeDrawingPayload(found);
     } else {
+      const msg = "Ignorado: Ninguno de los elementos del lote pertenece a Chispazo o contiene un vector de 5 números válidos.";
+      logWebhookDiagnostic("ignored", msg, payload, null);
       return res.status(200).json({
         success: true,
-        message: "Ignorado del webhook: Ninguno de los elementos del lote pertenece a Chispazo (evitando Tris/Melate)."
+        message: msg
       });
     }
   }
 
   // Filtrado de otros sorteos como Melate o Tris de forma segura
-  const juegoName = String(chispazoPayload.juego || chispazoPayload.product || chispazoPayload.tipoSorteo || chispazoPayload.tipoJuego || "").toLowerCase();
-  if (juegoName && (juegoName.includes("melate") || juegoName.includes("tris") || juegoName.includes("progol") || (!juegoName.includes("chispazo")))) {
+  const juegoName = String(chispazoPayload.juego || "").toLowerCase();
+  if (juegoName && (juegoName.includes("melate") || juegoName.includes("tris") || juegoName.includes("progol"))) {
+    const msg = `Bloque ignorado de forma segura: El sorteo recibido (${juegoName}) no corresponde a la tómbola Chispazo.`;
+    logWebhookDiagnostic("ignored", msg, payload, chispazoPayload);
     return res.status(200).json({
       success: true,
-      message: `Bloque ignorado de forma segura: El sorteo recibido (${juegoName}) no corresponde a la tómbola Chispazo.`
+      message: msg
     });
   }
 
@@ -150,10 +345,13 @@ async function handleSync(payload: any, res: any) {
   const { sorteo, fecha, combinacion, ordenSalida, tipoMaletin, pesajes } = chispazoPayload;
   
   if (!sorteo || !combinacion || !Array.isArray(combinacion) || combinacion.length !== 5) {
+    const errorMsg = "Estructura inválida: Falta número de 'sorteo' o 'combinacion' de 5 números entre 1 y 28.";
+    logWebhookDiagnostic("error", errorMsg, payload, chispazoPayload);
     return res.status(400).json({ 
       success: false, 
-      error: "Invalid payload: 'sorteo' and 'combinacion' (array of 5 numbers) are required",
-      received: chispazoPayload
+      error: errorMsg,
+      received: payload,
+      normalizedAttempt: chispazoPayload
     });
   }
   
@@ -231,7 +429,7 @@ async function handleSync(payload: any, res: any) {
   if (adminDb) {
     try {
       // 1. Guardar sorteo en Firestore (id del documento es el número de sorteo)
-      await adminDb.collection("draws").doc(String(sorteo)).set({
+      await setDoc(doc(adminDb, "draws", String(sorteo)), {
         CONCURSO: Number(sorteo),
         FECHA: fecha || new Date().toLocaleDateString('es-MX'),
         R1: sortedCombination[0],
@@ -243,9 +441,9 @@ async function handleSync(payload: any, res: any) {
       }, { merge: true });
 
       // 2. Guardar pesajes dinámicos de bolas en settings/weights
-      const weightsDocRef = adminDb.collection("settings").doc("weights");
-      const existingWeightsDoc = await weightsDocRef.get();
-      let currentWeightsMap = existingWeightsDoc.exists ? (existingWeightsDoc.data()?.weights || {}) : {};
+      const weightsDocRef = doc(adminDb, "settings", "weights");
+      const existingWeightsDoc = await getDoc(weightsDocRef);
+      let currentWeightsMap = existingWeightsDoc.exists() ? (existingWeightsDoc.data()?.weights || {}) : {};
       
       if (pesajes && typeof pesajes === "object") {
         for (const [key, val] of Object.entries(pesajes)) {
@@ -255,13 +453,13 @@ async function handleSync(payload: any, res: any) {
           }
         }
       }
-      await weightsDocRef.set({
+      await setDoc(weightsDocRef, {
         weights: currentWeightsMap,
         updatedAt: new Date().toISOString()
       }, { merge: true });
 
       // 3. Guardar el historial de maletín
-      await adminDb.collection("suitcaseHistory").doc(String(sorteo)).set({
+      await setDoc(doc(adminDb, "suitcaseHistory", String(sorteo)), {
         draw: Number(sorteo),
         date: fecha || new Date().toLocaleDateString('es-MX'),
         weight_28: Number(p28Weight),
@@ -275,6 +473,13 @@ async function handleSync(payload: any, res: any) {
     }
   }
   
+  logWebhookDiagnostic(
+    "success",
+    `Sorteo #${sorteo} procesado exitosamente con combinación ordenada: ${sortedCombination.join(', ')}.`,
+    payload,
+    chispazoPayload
+  );
+
   return res.json({
     success: true,
     message: "Sorteo sincronizado y calibración guardada exitosamente de forma antifrágil",
@@ -284,7 +489,26 @@ async function handleSync(payload: any, res: any) {
   });
 }
 
-app.post("/api/sync-automatic", async (req, res) => {
+app.get("/api/webhook-diagnostics", (req, res) => {
+  const diagPath = path.join(process.cwd(), "webhook_diagnostics.json");
+  if (fs.existsSync(diagPath)) {
+    try {
+      const data = JSON.parse(fs.readFileSync(diagPath, "utf-8"));
+      return res.json(data);
+    } catch (e: any) {
+      return res.json({ error: "Failed to read diagnostics: " + e.message });
+    }
+  }
+  return res.json({ 
+    status: "none", 
+    message: "No se han recibido solicitudes en el webhook automático del búnker aún. Esperando transmisión de Make.com." 
+  });
+});
+
+app.all(["/api/sync-automatic", "/api/sync-data", "/api/webhook"], async (req, res) => {
+  if (req.method !== "POST" && req.method !== "PUT") {
+    return res.status(405).json({ success: false, error: "Method not allowed. Use POST or PUT." });
+  }
   try {
     let rawData = "";
     

@@ -1,5 +1,1705 @@
 {
-  "draws": [],
-  "weights": {},
-  "suitcaseHistory": []
+  "draws": [
+    {
+      "CONCURSO": 12150,
+      "FECHA": "25/07/2026",
+      "R1": 1,
+      "R2": 12,
+      "R3": 17,
+      "R4": 22,
+      "R5": 24,
+      "ordenSalida": [1, 24, 22, 12, 17]
+    },
+    {
+      "CONCURSO": 12148,
+      "FECHA": "24/07/2026",
+      "R1": 6,
+      "R2": 9,
+      "R3": 11,
+      "R4": 17,
+      "R5": 24,
+      "ordenSalida": [6, 9, 11, 17, 24]
+    },
+    {
+      "CONCURSO": 12147,
+      "FECHA": "24/07/2026",
+      "R1": 2,
+      "R2": 5,
+      "R3": 22,
+      "R4": 23,
+      "R5": 27,
+      "ordenSalida": [2, 5, 22, 23, 27]
+    },
+    {
+      "CONCURSO": 12146,
+      "FECHA": "23/07/2026",
+      "R1": 14,
+      "R2": 15,
+      "R3": 16,
+      "R4": 18,
+      "R5": 27,
+      "ordenSalida": [14, 15, 16, 18, 27]
+    },
+    {
+      "CONCURSO": 12145,
+      "FECHA": "23/07/2026",
+      "R1": 2,
+      "R2": 3,
+      "R3": 14,
+      "R4": 24,
+      "R5": 27,
+      "ordenSalida": [2, 3, 14, 24, 27]
+    },
+    {
+      "CONCURSO": 12144,
+      "FECHA": "22/07/2026",
+      "R1": 5,
+      "R2": 8,
+      "R3": 23,
+      "R4": 25,
+      "R5": 27,
+      "ordenSalida": [5, 8, 23, 25, 27]
+    },
+    {
+      "CONCURSO": 12143,
+      "FECHA": "22/07/2026",
+      "R1": 1,
+      "R2": 9,
+      "R3": 13,
+      "R4": 20,
+      "R5": 28,
+      "ordenSalida": [1, 9, 13, 20, 28]
+    },
+    {
+      "CONCURSO": 12142,
+      "FECHA": "21/07/2026",
+      "R1": 5,
+      "R2": 8,
+      "R3": 15,
+      "R4": 17,
+      "R5": 23,
+      "ordenSalida": [5, 8, 15, 17, 23]
+    },
+    {
+      "CONCURSO": 12141,
+      "FECHA": "21/07/2026",
+      "R1": 6,
+      "R2": 15,
+      "R3": 17,
+      "R4": 19,
+      "R5": 23,
+      "ordenSalida": [6, 15, 17, 19, 23]
+    },
+    {
+      "CONCURSO": 12140,
+      "FECHA": "20/07/2026",
+      "R1": 2,
+      "R2": 4,
+      "R3": 11,
+      "R4": 16,
+      "R5": 27,
+      "ordenSalida": [2, 4, 11, 16, 27]
+    },
+    {
+      "CONCURSO": 12139,
+      "FECHA": "20/07/2026",
+      "R1": 1,
+      "R2": 8,
+      "R3": 9,
+      "R4": 10,
+      "R5": 26,
+      "ordenSalida": [1, 8, 9, 10, 26]
+    },
+    {
+      "CONCURSO": 12138,
+      "FECHA": "19/07/2026",
+      "R1": 8,
+      "R2": 10,
+      "R3": 15,
+      "R4": 23,
+      "R5": 26,
+      "ordenSalida": [8, 10, 15, 23, 26]
+    },
+    {
+      "CONCURSO": 12137,
+      "FECHA": "19/07/2026",
+      "R1": 4,
+      "R2": 7,
+      "R3": 9,
+      "R4": 13,
+      "R5": 25,
+      "ordenSalida": [4, 7, 9, 13, 25]
+    },
+    {
+      "CONCURSO": 12136,
+      "FECHA": "18/07/2026",
+      "R1": 1,
+      "R2": 2,
+      "R3": 6,
+      "R4": 23,
+      "R5": 24,
+      "ordenSalida": [1, 2, 6, 23, 24]
+    },
+    {
+      "CONCURSO": 12135,
+      "FECHA": "18/07/2026",
+      "R1": 4,
+      "R2": 7,
+      "R3": 10,
+      "R4": 20,
+      "R5": 26,
+      "ordenSalida": [4, 7, 10, 20, 26]
+    },
+    {
+      "CONCURSO": 12134,
+      "FECHA": "17/07/2026",
+      "R1": 8,
+      "R2": 15,
+      "R3": 18,
+      "R4": 19,
+      "R5": 20,
+      "ordenSalida": [8, 15, 18, 19, 20]
+    },
+    {
+      "CONCURSO": 12133,
+      "FECHA": "17/07/2026",
+      "R1": 4,
+      "R2": 8,
+      "R3": 14,
+      "R4": 19,
+      "R5": 23,
+      "ordenSalida": [4, 8, 14, 19, 23]
+    },
+    {
+      "CONCURSO": 12132,
+      "FECHA": "16/07/2026",
+      "R1": 4,
+      "R2": 12,
+      "R3": 13,
+      "R4": 18,
+      "R5": 24,
+      "ordenSalida": [4, 12, 13, 18, 24]
+    },
+    {
+      "CONCURSO": 12131,
+      "FECHA": "16/07/2026",
+      "R1": 1,
+      "R2": 10,
+      "R3": 21,
+      "R4": 25,
+      "R5": 26,
+      "ordenSalida": [
+        1,
+        10,
+        21,
+        25,
+        26
+      ]
+    },
+    {
+      "CONCURSO": 12130,
+      "FECHA": "15/07/2026",
+      "R1": 3,
+      "R2": 7,
+      "R3": 22,
+      "R4": 27,
+      "R5": 28,
+      "ordenSalida": [
+        3,
+        7,
+        22,
+        27,
+        28
+      ]
+    },
+    {
+      "CONCURSO": 12129,
+      "FECHA": "15/07/2026",
+      "R1": 10,
+      "R2": 13,
+      "R3": 14,
+      "R4": 15,
+      "R5": 16,
+      "ordenSalida": [
+        10,
+        13,
+        14,
+        15,
+        16
+      ]
+    },
+    {
+      "CONCURSO": 12128,
+      "FECHA": "14/07/2026",
+      "R1": 3,
+      "R2": 4,
+      "R3": 7,
+      "R4": 18,
+      "R5": 26,
+      "ordenSalida": [
+        3,
+        4,
+        7,
+        18,
+        26
+      ]
+    },
+    {
+      "CONCURSO": 12127,
+      "FECHA": "14/07/2026",
+      "R1": 13,
+      "R2": 14,
+      "R3": 17,
+      "R4": 20,
+      "R5": 26,
+      "ordenSalida": [
+        13,
+        14,
+        17,
+        20,
+        26
+      ]
+    },
+    {
+      "CONCURSO": 12126,
+      "FECHA": "13/07/2026",
+      "R1": 1,
+      "R2": 5,
+      "R3": 9,
+      "R4": 16,
+      "R5": 26,
+      "ordenSalida": [
+        1,
+        5,
+        9,
+        16,
+        26
+      ]
+    },
+    {
+      "CONCURSO": 12125,
+      "FECHA": "13/07/2026",
+      "R1": 2,
+      "R2": 8,
+      "R3": 14,
+      "R4": 22,
+      "R5": 23,
+      "ordenSalida": [
+        2,
+        8,
+        14,
+        22,
+        23
+      ]
+    },
+    {
+      "CONCURSO": 12124,
+      "FECHA": "12/07/2026",
+      "R1": 1,
+      "R2": 4,
+      "R3": 12,
+      "R4": 16,
+      "R5": 19,
+      "ordenSalida": [
+        1,
+        4,
+        12,
+        16,
+        19
+      ]
+    },
+    {
+      "CONCURSO": 12123,
+      "FECHA": "12/07/2026",
+      "R1": 2,
+      "R2": 15,
+      "R3": 22,
+      "R4": 25,
+      "R5": 28,
+      "ordenSalida": [
+        2,
+        15,
+        22,
+        25,
+        28
+      ]
+    },
+    {
+      "CONCURSO": 12122,
+      "FECHA": "11/07/2026",
+      "R1": 4,
+      "R2": 13,
+      "R3": 15,
+      "R4": 21,
+      "R5": 23,
+      "ordenSalida": [
+        4,
+        13,
+        15,
+        21,
+        23
+      ]
+    },
+    {
+      "CONCURSO": 12121,
+      "FECHA": "11/07/2026",
+      "R1": 5,
+      "R2": 9,
+      "R3": 10,
+      "R4": 19,
+      "R5": 27,
+      "ordenSalida": [
+        5,
+        9,
+        10,
+        19,
+        27
+      ]
+    },
+    {
+      "CONCURSO": 12120,
+      "FECHA": "10/07/2026",
+      "R1": 3,
+      "R2": 12,
+      "R3": 14,
+      "R4": 23,
+      "R5": 26,
+      "ordenSalida": [
+        3,
+        12,
+        14,
+        23,
+        26
+      ]
+    },
+    {
+      "CONCURSO": 12119,
+      "FECHA": "10/07/2026",
+      "R1": 6,
+      "R2": 14,
+      "R3": 21,
+      "R4": 23,
+      "R5": 26,
+      "ordenSalida": [
+        6,
+        14,
+        21,
+        23,
+        26
+      ]
+    },
+    {
+      "CONCURSO": 12118,
+      "FECHA": "09/07/2026",
+      "R1": 2,
+      "R2": 13,
+      "R3": 21,
+      "R4": 23,
+      "R5": 24,
+      "ordenSalida": [
+        2,
+        13,
+        21,
+        23,
+        24
+      ]
+    },
+    {
+      "CONCURSO": 12117,
+      "FECHA": "09/07/2026",
+      "R1": 12,
+      "R2": 16,
+      "R3": 17,
+      "R4": 19,
+      "R5": 21,
+      "ordenSalida": [
+        12,
+        16,
+        17,
+        19,
+        21
+      ]
+    },
+    {
+      "CONCURSO": 12094,
+      "FECHA": "27/06/2026",
+      "R1": 4,
+      "R2": 6,
+      "R3": 12,
+      "R4": 17,
+      "R5": 18,
+      "ordenSalida": [
+        4,
+        6,
+        12,
+        17,
+        18
+      ]
+    },
+    {
+      "CONCURSO": 12093,
+      "FECHA": "27/06/2026",
+      "R1": 2,
+      "R2": 12,
+      "R3": 16,
+      "R4": 21,
+      "R5": 28,
+      "ordenSalida": [
+        2,
+        12,
+        16,
+        21,
+        28
+      ]
+    },
+    {
+      "CONCURSO": 12092,
+      "FECHA": "26/06/2026",
+      "R1": 3,
+      "R2": 13,
+      "R3": 17,
+      "R4": 21,
+      "R5": 27,
+      "ordenSalida": [
+        3,
+        13,
+        17,
+        21,
+        27
+      ]
+    },
+    {
+      "CONCURSO": 12091,
+      "FECHA": "26/06/2026",
+      "R1": 2,
+      "R2": 5,
+      "R3": 12,
+      "R4": 18,
+      "R5": 21,
+      "ordenSalida": [
+        2,
+        5,
+        12,
+        18,
+        21
+      ]
+    },
+    {
+      "CONCURSO": 12090,
+      "FECHA": "25/06/2026",
+      "R1": 9,
+      "R2": 15,
+      "R3": 21,
+      "R4": 24,
+      "R5": 25,
+      "ordenSalida": [
+        9,
+        15,
+        21,
+        24,
+        25
+      ]
+    },
+    {
+      "CONCURSO": 12089,
+      "FECHA": "25/06/2026",
+      "R1": 4,
+      "R2": 5,
+      "R3": 10,
+      "R4": 23,
+      "R5": 26,
+      "ordenSalida": [
+        4,
+        5,
+        10,
+        23,
+        26
+      ]
+    },
+    {
+      "CONCURSO": 12088,
+      "FECHA": "24/06/2026",
+      "R1": 3,
+      "R2": 9,
+      "R3": 13,
+      "R4": 14,
+      "R5": 27,
+      "ordenSalida": [
+        3,
+        9,
+        13,
+        14,
+        27
+      ]
+    },
+    {
+      "CONCURSO": 12087,
+      "FECHA": "24/06/2026",
+      "R1": 9,
+      "R2": 14,
+      "R3": 19,
+      "R4": 20,
+      "R5": 21,
+      "ordenSalida": [
+        9,
+        14,
+        19,
+        20,
+        21
+      ]
+    },
+    {
+      "CONCURSO": 12086,
+      "FECHA": "23/06/2026",
+      "R1": 1,
+      "R2": 3,
+      "R3": 5,
+      "R4": 6,
+      "R5": 7,
+      "ordenSalida": [
+        1,
+        3,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "CONCURSO": 12085,
+      "FECHA": "23/06/2026",
+      "R1": 10,
+      "R2": 12,
+      "R3": 14,
+      "R4": 16,
+      "R5": 22,
+      "ordenSalida": [
+        10,
+        12,
+        14,
+        16,
+        22
+      ]
+    },
+    {
+      "CONCURSO": 12084,
+      "FECHA": "22/06/2026",
+      "R1": 5,
+      "R2": 14,
+      "R3": 17,
+      "R4": 19,
+      "R5": 22,
+      "ordenSalida": [
+        5,
+        14,
+        17,
+        19,
+        22
+      ]
+    },
+    {
+      "CONCURSO": 12083,
+      "FECHA": "22/06/2026",
+      "R1": 9,
+      "R2": 10,
+      "R3": 14,
+      "R4": 17,
+      "R5": 26,
+      "ordenSalida": [
+        9,
+        10,
+        14,
+        17,
+        26
+      ]
+    },
+    {
+      "CONCURSO": 12082,
+      "FECHA": "21/06/2026",
+      "R1": 1,
+      "R2": 10,
+      "R3": 12,
+      "R4": 18,
+      "R5": 21,
+      "ordenSalida": [
+        1,
+        10,
+        12,
+        18,
+        21
+      ]
+    },
+    {
+      "CONCURSO": 12081,
+      "FECHA": "21/06/2026",
+      "R1": 6,
+      "R2": 7,
+      "R3": 11,
+      "R4": 19,
+      "R5": 24,
+      "ordenSalida": [
+        6,
+        7,
+        11,
+        19,
+        24
+      ]
+    },
+    {
+      "CONCURSO": 12080,
+      "FECHA": "20/06/2026",
+      "R1": 2,
+      "R2": 6,
+      "R3": 17,
+      "R4": 18,
+      "R5": 21,
+      "ordenSalida": [
+        2,
+        6,
+        17,
+        18,
+        21
+      ]
+    },
+    {
+      "CONCURSO": 12072,
+      "FECHA": "16/06/2026",
+      "R1": 2,
+      "R2": 8,
+      "R3": 17,
+      "R4": 22,
+      "R5": 27,
+      "ordenSalida": [
+        2,
+        8,
+        17,
+        22,
+        27
+      ]
+    },
+    {
+      "CONCURSO": 12071,
+      "FECHA": "16/06/2026",
+      "R1": 4,
+      "R2": 18,
+      "R3": 23,
+      "R4": 25,
+      "R5": 28,
+      "ordenSalida": [
+        4,
+        18,
+        23,
+        25,
+        28
+      ]
+    },
+    {
+      "CONCURSO": 12069,
+      "FECHA": "15/06/2026",
+      "R1": 3,
+      "R2": 9,
+      "R3": 14,
+      "R4": 17,
+      "R5": 26,
+      "ordenSalida": [
+        3,
+        9,
+        14,
+        17,
+        26
+      ]
+    },
+    {
+      "CONCURSO": 12068,
+      "FECHA": "14/06/2026",
+      "R1": 8,
+      "R2": 15,
+      "R3": 16,
+      "R4": 21,
+      "R5": 22,
+      "ordenSalida": [
+        8,
+        15,
+        16,
+        21,
+        22
+      ]
+    },
+    {
+      "CONCURSO": 12067,
+      "FECHA": "14/06/2026",
+      "R1": 1,
+      "R2": 10,
+      "R3": 11,
+      "R4": 12,
+      "R5": 16,
+      "ordenSalida": [
+        1,
+        10,
+        11,
+        12,
+        16
+      ]
+    },
+    {
+      "CONCURSO": 12066,
+      "FECHA": "13/06/2026",
+      "R1": 11,
+      "R2": 16,
+      "R3": 23,
+      "R4": 26,
+      "R5": 28,
+      "ordenSalida": [
+        11,
+        16,
+        23,
+        26,
+        28
+      ]
+    },
+    {
+      "CONCURSO": 12065,
+      "FECHA": "13/06/2026",
+      "R1": 14,
+      "R2": 15,
+      "R3": 18,
+      "R4": 19,
+      "R5": 27,
+      "ordenSalida": [
+        14,
+        15,
+        18,
+        19,
+        27
+      ]
+    },
+    {
+      "CONCURSO": 12064,
+      "FECHA": "12/06/2026",
+      "R1": 21,
+      "R2": 24,
+      "R3": 25,
+      "R4": 26,
+      "R5": 28,
+      "ordenSalida": [
+        21,
+        24,
+        25,
+        26,
+        28
+      ]
+    },
+    {
+      "CONCURSO": 12063,
+      "FECHA": "12/06/2026",
+      "R1": 6,
+      "R2": 7,
+      "R3": 9,
+      "R4": 11,
+      "R5": 15,
+      "ordenSalida": [
+        6,
+        7,
+        9,
+        11,
+        15
+      ]
+    },
+    {
+      "CONCURSO": 12062,
+      "FECHA": "11/06/2026",
+      "R1": 7,
+      "R2": 11,
+      "R3": 13,
+      "R4": 22,
+      "R5": 23,
+      "ordenSalida": [
+        7,
+        11,
+        13,
+        22,
+        23
+      ]
+    },
+    {
+      "CONCURSO": 12061,
+      "FECHA": "11/06/2026",
+      "R1": 6,
+      "R2": 15,
+      "R3": 22,
+      "R4": 27,
+      "R5": 28,
+      "ordenSalida": [
+        6,
+        15,
+        22,
+        27,
+        28
+      ]
+    },
+    {
+      "CONCURSO": 12060,
+      "FECHA": "10/06/2026",
+      "R1": 10,
+      "R2": 11,
+      "R3": 14,
+      "R4": 18,
+      "R5": 21,
+      "ordenSalida": [
+        10,
+        11,
+        14,
+        18,
+        21
+      ]
+    },
+    {
+      "CONCURSO": 12059,
+      "FECHA": "10/06/2026",
+      "R1": 7,
+      "R2": 16,
+      "R3": 21,
+      "R4": 24,
+      "R5": 27,
+      "ordenSalida": [
+        7,
+        16,
+        21,
+        24,
+        27
+      ]
+    },
+    {
+      "CONCURSO": 12058,
+      "FECHA": "09/06/2026",
+      "R1": 3,
+      "R2": 7,
+      "R3": 19,
+      "R4": 20,
+      "R5": 23,
+      "ordenSalida": [
+        3,
+        7,
+        19,
+        20,
+        23
+      ]
+    },
+    {
+      "CONCURSO": 12057,
+      "FECHA": "09/06/2026",
+      "R1": 4,
+      "R2": 10,
+      "R3": 13,
+      "R4": 14,
+      "R5": 28,
+      "ordenSalida": [
+        4,
+        10,
+        13,
+        14,
+        28
+      ]
+    },
+    {
+      "CONCURSO": 12056,
+      "FECHA": "08/06/2026",
+      "R1": 10,
+      "R2": 13,
+      "R3": 22,
+      "R4": 23,
+      "R5": 26,
+      "ordenSalida": [
+        10,
+        13,
+        22,
+        23,
+        26
+      ]
+    },
+    {
+      "CONCURSO": 12055,
+      "FECHA": "08/06/2026",
+      "R1": 2,
+      "R2": 9,
+      "R3": 19,
+      "R4": 23,
+      "R5": 28,
+      "ordenSalida": [
+        2,
+        9,
+        19,
+        23,
+        28
+      ]
+    }
+  ],
+  "weights": {
+    "1": 4.34,
+    "2": 4.34,
+    "3": 4.34,
+    "4": 4.34,
+    "5": 4.34,
+    "6": 4.34,
+    "7": 4.34,
+    "8": 4.34,
+    "9": 4.34,
+    "10": 4.34,
+    "11": 4.34,
+    "12": 4.34,
+    "13": 4.34,
+    "14": 4.34,
+    "15": 4.34,
+    "16": 4.34,
+    "17": 4.34,
+    "18": 4.34,
+    "19": 4.34,
+    "20": 4.34,
+    "21": 4.34,
+    "22": 4.34,
+    "23": 4.34,
+    "24": 4.34,
+    "25": 4.34,
+    "26": 4.34,
+    "27": 4.34,
+    "28": 4.34
+  },
+  "suitcaseHistory": [
+    {
+      "draw": 12150,
+      "date": "25/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte de Pesaje y Transmisión Oficial (Clásico 12150)",
+      "result": [1, 12, 17, 22, 24]
+    },
+    {
+      "draw": 12148,
+      "date": "24/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [6, 9, 11, 17, 24]
+    },
+    {
+      "draw": 12147,
+      "date": "24/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [2, 5, 22, 23, 27]
+    },
+    {
+      "draw": 12146,
+      "date": "23/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [14, 15, 16, 18, 27]
+    },
+    {
+      "draw": 12145,
+      "date": "23/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [2, 3, 14, 24, 27]
+    },
+    {
+      "draw": 12144,
+      "date": "22/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [5, 8, 23, 25, 27]
+    },
+    {
+      "draw": 12143,
+      "date": "22/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [1, 9, 13, 20, 28]
+    },
+    {
+      "draw": 12142,
+      "date": "21/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [5, 8, 15, 17, 23]
+    },
+    {
+      "draw": 12141,
+      "date": "21/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [6, 15, 17, 19, 23]
+    },
+    {
+      "draw": 12140,
+      "date": "20/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [2, 4, 11, 16, 27]
+    },
+    {
+      "draw": 12139,
+      "date": "20/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [1, 8, 9, 10, 26]
+    },
+    {
+      "draw": 12138,
+      "date": "19/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [8, 10, 15, 23, 26]
+    },
+    {
+      "draw": 12137,
+      "date": "19/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [4, 7, 9, 13, 25]
+    },
+    {
+      "draw": 12136,
+      "date": "18/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [1, 2, 6, 23, 24]
+    },
+    {
+      "draw": 12135,
+      "date": "18/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [4, 7, 10, 20, 26]
+    },
+    {
+      "draw": 12134,
+      "date": "17/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [8, 15, 18, 19, 20]
+    },
+    {
+      "draw": 12133,
+      "date": "17/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [4, 8, 14, 19, 23]
+    },
+    {
+      "draw": 12132,
+      "date": "16/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [4, 12, 13, 18, 24]
+    },
+    {
+      "draw": 12131,
+      "date": "16/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico/De las tres)",
+      "result": [
+        1,
+        10,
+        21,
+        25,
+        26
+      ]
+    },
+    {
+      "draw": 12130,
+      "date": "15/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        3,
+        7,
+        22,
+        27,
+        28
+      ]
+    },
+    {
+      "draw": 12129,
+      "date": "15/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        10,
+        13,
+        14,
+        15,
+        16
+      ]
+    },
+    {
+      "draw": 12128,
+      "date": "14/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        3,
+        4,
+        7,
+        18,
+        26
+      ]
+    },
+    {
+      "draw": 12127,
+      "date": "14/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        13,
+        14,
+        17,
+        20,
+        26
+      ]
+    },
+    {
+      "draw": 12126,
+      "date": "13/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        1,
+        5,
+        9,
+        16,
+        26
+      ]
+    },
+    {
+      "draw": 12125,
+      "date": "13/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        2,
+        8,
+        14,
+        22,
+        23
+      ]
+    },
+    {
+      "draw": 12124,
+      "date": "12/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        1,
+        4,
+        12,
+        16,
+        19
+      ]
+    },
+    {
+      "draw": 12123,
+      "date": "12/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        2,
+        15,
+        22,
+        25,
+        28
+      ]
+    },
+    {
+      "draw": 12122,
+      "date": "11/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        4,
+        13,
+        15,
+        21,
+        23
+      ]
+    },
+    {
+      "draw": 12121,
+      "date": "11/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        5,
+        9,
+        10,
+        19,
+        27
+      ]
+    },
+    {
+      "draw": 12120,
+      "date": "10/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        3,
+        12,
+        14,
+        23,
+        26
+      ]
+    },
+    {
+      "draw": 12119,
+      "date": "10/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        6,
+        14,
+        21,
+        23,
+        26
+      ]
+    },
+    {
+      "draw": 12118,
+      "date": "09/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        2,
+        13,
+        21,
+        23,
+        24
+      ]
+    },
+    {
+      "draw": 12117,
+      "date": "09/07/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        12,
+        16,
+        17,
+        19,
+        21
+      ]
+    },
+    {
+      "draw": 12094,
+      "date": "27/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        4,
+        6,
+        12,
+        17,
+        18
+      ]
+    },
+    {
+      "draw": 12093,
+      "date": "27/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        2,
+        12,
+        16,
+        21,
+        28
+      ]
+    },
+    {
+      "draw": 12092,
+      "date": "26/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        3,
+        13,
+        17,
+        21,
+        27
+      ]
+    },
+    {
+      "draw": 12091,
+      "date": "26/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        2,
+        5,
+        12,
+        18,
+        21
+      ]
+    },
+    {
+      "draw": 12090,
+      "date": "25/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        9,
+        15,
+        21,
+        24,
+        25
+      ]
+    },
+    {
+      "draw": 12089,
+      "date": "25/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        4,
+        5,
+        10,
+        23,
+        26
+      ]
+    },
+    {
+      "draw": 12088,
+      "date": "24/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        3,
+        9,
+        13,
+        14,
+        27
+      ]
+    },
+    {
+      "draw": 12087,
+      "date": "24/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        9,
+        14,
+        19,
+        20,
+        21
+      ]
+    },
+    {
+      "draw": 12086,
+      "date": "23/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        1,
+        3,
+        5,
+        6,
+        7
+      ]
+    },
+    {
+      "draw": 12085,
+      "date": "23/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        10,
+        12,
+        14,
+        16,
+        22
+      ]
+    },
+    {
+      "draw": 12084,
+      "date": "22/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        5,
+        14,
+        17,
+        19,
+        22
+      ]
+    },
+    {
+      "draw": 12083,
+      "date": "22/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        9,
+        10,
+        14,
+        17,
+        26
+      ]
+    },
+    {
+      "draw": 12082,
+      "date": "21/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        1,
+        10,
+        12,
+        18,
+        21
+      ]
+    },
+    {
+      "draw": 12081,
+      "date": "21/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (De las tres)",
+      "result": [
+        6,
+        7,
+        11,
+        19,
+        24
+      ]
+    },
+    {
+      "draw": 12080,
+      "date": "20/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado vía reporte (Clásico)",
+      "result": [
+        2,
+        6,
+        17,
+        18,
+        21
+      ]
+    },
+    {
+      "draw": 12072,
+      "date": "16/06/2026",
+      "weight_28": 4.34,
+      "notes": "Capturado del reporte semanal (Clásico)",
+      "result": [
+        2,
+        8,
+        17,
+        22,
+        27
+      ]
+    },
+    {
+      "draw": 12071,
+      "date": "16/06/2026",
+      "weight_28": 4.34,
+      "notes": "Capturado del reporte semanal (De las tres)",
+      "result": [
+        4,
+        18,
+        23,
+        25,
+        28
+      ]
+    },
+    {
+      "draw": 12069,
+      "date": "15/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        3,
+        9,
+        14,
+        17,
+        26
+      ]
+    },
+    {
+      "draw": 12068,
+      "date": "14/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        8,
+        15,
+        16,
+        21,
+        22
+      ]
+    },
+    {
+      "draw": 12067,
+      "date": "14/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        1,
+        10,
+        11,
+        12,
+        16
+      ]
+    },
+    {
+      "draw": 12066,
+      "date": "13/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        11,
+        16,
+        23,
+        26,
+        28
+      ]
+    },
+    {
+      "draw": 12065,
+      "date": "13/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        14,
+        15,
+        18,
+        19,
+        27
+      ]
+    },
+    {
+      "draw": 12064,
+      "date": "12/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        21,
+        24,
+        25,
+        26,
+        28
+      ]
+    },
+    {
+      "draw": 12063,
+      "date": "12/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        6,
+        7,
+        9,
+        11,
+        15
+      ]
+    },
+    {
+      "draw": 12062,
+      "date": "11/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        7,
+        11,
+        13,
+        22,
+        23
+      ]
+    },
+    {
+      "draw": 12061,
+      "date": "11/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        6,
+        15,
+        22,
+        27,
+        28
+      ]
+    },
+    {
+      "draw": 12060,
+      "date": "10/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        10,
+        11,
+        14,
+        18,
+        21
+      ]
+    },
+    {
+      "draw": 12059,
+      "date": "10/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        7,
+        16,
+        21,
+        24,
+        27
+      ]
+    },
+    {
+      "draw": 12058,
+      "date": "09/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        3,
+        7,
+        19,
+        20,
+        23
+      ]
+    },
+    {
+      "draw": 12057,
+      "date": "09/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        4,
+        10,
+        13,
+        14,
+        28
+      ]
+    },
+    {
+      "draw": 12056,
+      "date": "08/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        10,
+        13,
+        22,
+        23,
+        26
+      ]
+    },
+    {
+      "draw": 12055,
+      "date": "08/06/2026",
+      "weight_28": 4.34,
+      "notes": "Sincronizado manualmente vía panel de actualización",
+      "result": [
+        2,
+        9,
+        19,
+        23,
+        28
+      ]
+    }
+  ]
 }

@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { DrawResult } from '../types';
+import { StackedPerformanceChart } from './StackedPerformanceChart';
+import { FailedPredictionsLog } from './FailedPredictionsLog';
 
 interface CollisionData {
   time: string;
@@ -10,7 +13,7 @@ interface CollisionData {
   fatigue: number;
 }
 
-export const BacktestingForense: React.FC = () => {
+export const BacktestingForense: React.FC<{ draws?: DrawResult[] }> = ({ draws }) => {
   const [data, setData] = useState<CollisionData[]>([]);
   const [selectedNode, setSelectedNode] = useState(22);
 
@@ -198,6 +201,12 @@ export const BacktestingForense: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* REGISTRO DE PREDICCIONES FALLIDAS Y DESVIACIÓN DE PESAJE DE MALETÍN */}
+      <FailedPredictionsLog draws={draws || []} />
+
+      {/* COMPONENTE DE VISUALIZACIÓN COMPARATIVA FLUIDA */}
+      <StackedPerformanceChart draws={draws} />
     </motion.div>
   );
 };

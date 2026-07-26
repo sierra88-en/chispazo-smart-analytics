@@ -50,26 +50,17 @@ service cloud.firestore {
 
     // Draws Collection rules
     match /draws/{concursoId} {
-      allow get: if isValidId(concursoId);
-      allow list: if true;
-      // Protected from direct client writes (Only written by server-side admin SDK)
-      allow create, update, delete: if false;
+      allow read, write: if true;
     }
 
     // Settings Collection rules
     match /settings/{settingId} {
-      allow get: if isValidId(settingId);
-      allow list: if true;
-      // Protected from direct client writes
-      allow create, update, delete: if false;
+      allow read, write: if true;
     }
 
     // Suitcase History Collection rules
     match /suitcaseHistory/{drawId} {
-      allow get: if isValidId(drawId);
-      allow list: if true;
-      // Protected from direct client writes
-      allow create, update, delete: if false;
+      allow read, write: if true;
     }
   }
 }

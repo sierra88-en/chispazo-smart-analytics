@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ViewState, DrawResult, SimulationResult, SavedTicket, ShannonEntropyProtocol, SwarmConsciousness } from './types';
-import { loadHistoricalData, calculateFrequencies, generateSmartCombination, generateEliteMultiple6, generateEliteMultiple7, runSimulation, calculateThermalInertia, getHistoryBySchedule, generateQuantum5, executeShannonAnalysis, executeElasticReboundCalculation, executeSwarmAnalysis, findWearSingularity, updateBallWeights, executeVortexCycleAnalysis, BALL_WEIGHTS, generateMandelCondensation, calculateHumanBiasScore, executeTripleScenarioSimulation, calculateDebtAndResonance, executeDeepSimulation, executeMarkovXContrast, calculateAntifragility, generateAntifragileVector, generateCausalVector, executeMaletinSignatureScanner, getDigitalTwinState, executeQuantumGodXTelemetry, calculateHScore, SUITCASE_HISTORY, recalibrateCombination } from './utils/dataHelper';
+import { loadHistoricalData, calculateFrequencies, generateSmartCombination, generateEliteMultiple6, generateEliteMultiple7, runSimulation, calculateThermalInertia, getHistoryBySchedule, generateQuantum5, executeShannonAnalysis, executeElasticReboundCalculation, executeSwarmAnalysis, findWearSingularity, updateBallWeights, executeVortexCycleAnalysis, BALL_WEIGHTS, generateMandelCondensation, calculateHumanBiasScore, executeTripleScenarioSimulation, calculateDebtAndResonance, executeDeepSimulation, executeMarkovXContrast, calculateAntifragility, generateAntifragileVector, generateCausalVector, executeMaletinSignatureScanner, getDigitalTwinState, executeQuantumGodXTelemetry, calculateHScore, SUITCASE_HISTORY, recalibrateCombination, generateAnticipationVector, calculateMonteCarloCombinationProbability, generateSocioHolyGrailCombination, HolyGrailResult } from './utils/dataHelper';
 import { getSorteoDate } from './utils/timeSync';
 import { getAIInsights, syncLatestDraws, getTicketAdjustment, getDeepQuantumAnalysis, getMarketingProof, getSearchGroundingAnalysis, getExecutiveReport, getVoiceBriefing, getStrategicFutureOpinion, getShannonEntropyAnalysis, getMarketSentimentAnalysis, getElasticReboundAnalysis, getCausalAntifragileAudit } from './services/geminiService';
 import FrequencyChart from './components/FrequencyChart';
@@ -23,6 +23,7 @@ import { TiraPesajeInput } from './components/TiraPesajeInput';
 import { MarkovHeatmap } from './components/MarkovHeatmap';
 import { calculateMarkovTransitions, calculateMalwareInfectionScores } from './utils/dataHelper';
 import { ShannonAudit } from './components/ShannonAudit';
+import { OfflineExportCenter } from './components/OfflineExportCenter';
 import { collection, doc, onSnapshot, query, orderBy, limit } from "firebase/firestore";
 import { db, handleFirestoreError, OperationType, testConnection } from "./services/firebase";
 
@@ -30,7 +31,14 @@ const SwarmDashboard: React.FC<{ swarm: SwarmConsciousness | null }> = ({ swarm 
   if (!swarm) return null;
 
   return (
-    <div className="bg-slate-900 border border-slate-800 p-8 rounded-[3rem] shadow-2xl overflow-hidden relative group">
+    <div className={`bg-slate-900 border p-8 rounded-[3rem] shadow-2xl overflow-hidden relative group transition-all duration-1000 ${
+      swarm.vetaDeOro 
+        ? 'border-amber-500/50 shadow-amber-500/30 animate-swarm-active' 
+        : 'border-slate-800'
+    }`}>
+      {swarm.vetaDeOro && (
+        <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 via-transparent to-yellow-500/5 rounded-[3rem] pointer-events-none animate-spin-slow" />
+      )}
       <div className="absolute -right-20 -top-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all duration-700" />
       
       <div className="flex items-center justify-between mb-8">
@@ -123,11 +131,33 @@ const SingularityAlert: React.FC<{ singularity: { year: number, event: string, c
   );
 };
 
+const shuffleAndSelect = (nums: number[], seed: number): number[] => {
+  const temp = [...nums];
+  for (let i = temp.length - 1; i > 0; i--) {
+    const j = Math.floor(((seed * 19 + i * 23) * 11) % (i + 1));
+    const holder = temp[i];
+    temp[i] = temp[j];
+    temp[j] = holder;
+  }
+  return temp.slice(0, 5).sort((a, b) => a - b);
+};
+
 const App: React.FC = () => {
   const { hablar, playBeep } = useQuantumVoice();
   const [data, setData] = useState<DrawResult[]>([]);
   const [view, setView] = useState<ViewState>('dashboard');
-  const [genMode, setGenMode] = useState<'simple' | 'multiple6' | 'multiple7' | 'quantum'>('quantum');
+  const [weeklyPlan, setWeeklyPlan] = useState<any[] | null>(() => {
+    try {
+      const saved = localStorage.getItem('quantum_weekly_plan');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+  const [isWeeklySimulating, setIsWeeklySimulating] = useState(false);
+  const [weeklySimProgress, setWeeklySimProgress] = useState(0);
+  const [genMode, setGenMode] = useState<'simple' | 'multiple6' | 'multiple7' | 'quantum' | 'grail'>('grail');
+  const [holyGrail, setHolyGrail] = useState<HolyGrailResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [shannonData, setShannonData] = useState<ShannonEntropyProtocol | null>(null);
   const [swarmData, setSwarmData] = useState<SwarmConsciousness | null>(null);
@@ -188,6 +218,61 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
   const [isCausalV11Loading, setIsCausalV11Loading] = useState(false);
   const [godXTelemetry, setGodXTelemetry] = useState<{ regime: string, suitcaseStability: number, dynamicNoise: number } | null>(null);
   const [malwareInfections, setMalwareInfections] = useState<{ num: number, score: number }[]>([]);
+  const [anticipationResult, setAnticipationResult] = useState<{ numbers: number[], explanation: string, excludedAnchors: number[] } | null>(null);
+  const [isAnticipationLoading, setIsAnticipationLoading] = useState(false);
+
+  // Módulo de Notificaciones y Alertas Monte Carlo (Proyección de Alta Densidad > 85%)
+  const [mcNotification, setMcNotification] = useState<{
+    id: string;
+    combination: number[];
+    probability: number;
+    atLeast1Match: number;
+    atLeast2Matches: number;
+    suctionSynergy: number;
+    timestamp: string;
+    isActive: boolean;
+  } | null>(null);
+  
+  const [mcNotificationHistory, setMcNotificationHistory] = useState<any[]>([]);
+
+  // Watcher del Servicio de Notificaciones Monte Carlo
+  useEffect(() => {
+    if (!suggestion || suggestion.length === 0) {
+      setMcNotification(null);
+      return;
+    }
+    
+    // Ejecutar simulación de probabilidad con los pesos activos
+    const mcProb = calculateMonteCarloCombinationProbability(suggestion, BALL_WEIGHTS);
+    
+    if (mcProb.probability >= 85.0) {
+      const alertId = `MC-ALERT-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+      const newAlert = {
+        id: alertId,
+        combination: [...suggestion],
+        probability: mcProb.probability,
+        atLeast1Match: mcProb.atLeast1Match,
+        atLeast2Matches: mcProb.atLeast2Matches,
+        suctionSynergy: mcProb.suctionSynergy,
+        timestamp: new Date().toLocaleTimeString('es-MX'),
+        isActive: true
+      };
+      
+      setMcNotification(newAlert);
+      setMcNotificationHistory(prev => {
+        // Evitar registrar duplicados consecutivos de la misma secuencia
+        if (prev.length > 0 && prev[0].combination.join(',') === suggestion.join(',')) {
+          return prev;
+        }
+        return [newAlert, ...prev].slice(0, 5);
+      });
+      
+      playBeep();
+      hablar(`Alerta Monte Carlo crítica detectada. La probabilidad de resonancia del vector es de ${newAlert.probability} por ciento. Excede el umbral de seguridad operacional del 85 por ciento.`);
+    } else {
+      setMcNotification(null);
+    }
+  }, [suggestion, playBeep]);
 
   // Listen for OAuth success
   useEffect(() => {
@@ -237,6 +322,30 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
   const [ticketStats, setTicketStats] = useState<Record<string, SimulationResult>>({});
   const [ticketAdjustment, setTicketAdjustment] = useState<Record<string, string>>({});
 
+  const [webhookDiagnostics, setWebhookDiagnostics] = useState<any>(null);
+  const [isDiagLoading, setIsDiagLoading] = useState(false);
+
+  const fetchWebhookDiagnostics = async () => {
+    setIsDiagLoading(true);
+    try {
+      const response = await fetch('/api/webhook-diagnostics');
+      if (response.ok) {
+        const diagData = await response.json();
+        setWebhookDiagnostics(diagData);
+      }
+    } catch (e) {
+      console.error("Failed to fetch webhook diagnostics:", e);
+    } finally {
+      setIsDiagLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (view === 'history') {
+      fetchWebhookDiagnostics();
+    }
+  }, [view]);
+
   // Recalcular análisis automáticamente de forma reactiva cuando cambia 'data' o 'myTickets'
   useEffect(() => {
     if (data.length === 0) return;
@@ -253,7 +362,8 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
     setSwarmData(swarm);
 
     setGodXTelemetry(executeQuantumGodXTelemetry(data));
-    setMalwareInfections(calculateMalwareInfectionScores());
+    setMalwareInfections(calculateMalwareInfectionScores(data));
+    setAnticipationResult(generateAnticipationVector(data));
 
     if (myTickets.length > 0) {
       const stats: Record<string, SimulationResult> = {};
@@ -318,8 +428,9 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
           const syncedWeights = docSnap.data().weights;
           if (syncedWeights && Object.keys(syncedWeights).length > 0) {
             updateBallWeights(syncedWeights);
-            // Provocar re-renderizado recalculando infecciones de malware
-            setMalwareInfections(calculateMalwareInfectionScores());
+            // Provocar re-renderizado recalculando infecciones de malware de forma predictiva
+            setMalwareInfections(calculateMalwareInfectionScores(loadHistoricalData()));
+            setAnticipationResult(generateAnticipationVector(loadHistoricalData()));
           }
         }
       }, (error) => {
@@ -417,8 +528,9 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
       // Inicializar Telemetría QUANTUM-GOD-X
       setGodXTelemetry(executeQuantumGodXTelemetry(historical));
   
-      // Inicializar Infecciones de Malware (Anomalías de Red)
-      setMalwareInfections(calculateMalwareInfectionScores());
+      // Inicializar Infecciones de Malware de forma predictiva anti-rezago
+      setMalwareInfections(calculateMalwareInfectionScores(historical));
+      setAnticipationResult(generateAnticipationVector(historical));
 
       // CARGAR TICKETS DESDE LOCALSTORAGE O AUDITORÍA INICIAL
       const saved = localStorage.getItem('quantum_god_tickets');
@@ -444,10 +556,11 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
       });
       setTicketStats(stats);
 
-      // Inicializar simulación para la sugerencia forense
-      if (suggestion.length > 0) {
-        setSimResult(runSimulation(suggestion, historical));
-      }
+      // Inicializar Santo Grial V12.0
+      const grailResult = generateSocioHolyGrailCombination(historical);
+      setHolyGrail(grailResult);
+      setSuggestion(grailResult.numbers);
+      setSimResult(runSimulation(grailResult.numbers, historical));
       
       setLoading(false);
     };
@@ -520,7 +633,12 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
       let sim: SimulationResult | null = null;
       let cert: number | null = null;
 
-      if (genMode === 'quantum') {
+      if (genMode === 'grail') {
+        const grailResult = generateSocioHolyGrailCombination(filteredData);
+        newNums = grailResult.numbers;
+        setHolyGrail(grailResult);
+        sim = runSimulation(newNums, filteredData);
+      } else if (genMode === 'quantum') {
         const elite = generateEliteMultiple7(filteredData);
         newNums = elite.numbers;
         sim = elite.simulation;
@@ -698,6 +816,30 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
       console.error("Error in Antifragile Vector:", error);
     } finally {
       setIsAntifragileLoading(false);
+    }
+  };
+
+  const handleAnticipationVector = async () => {
+    try {
+      setIsAnticipationLoading(true);
+      setAnticipationResult(null);
+      
+      hablar("Iniciando cálculo del Vector de Anticipación orbital. Excluyendo los números anclas de los últimos tres sorteos para anular el sesgo de rezago histórico.");
+      
+      await new Promise(resolve => setTimeout(resolve, 2200));
+      
+      const result = generateAnticipationVector(data);
+      
+      setAnticipationResult(result);
+      setSuggestion(result.numbers);
+      setSimResult(runSimulation(result.numbers, data));
+      
+      hablar("Vector de Anticipación sincronizado. Se ha neutralizado el rezago proyectando el desplazamiento futuro del maletín.");
+      setView('generator');
+    } catch (error) {
+      console.error("Error in Anticipation Vector calculation:", error);
+    } finally {
+      setIsAnticipationLoading(false);
     }
   };
 
@@ -915,6 +1057,138 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
     setTimeout(() => setSaveSuccess(null), 3000);
   };
 
+  const getNextSundayDate = () => {
+    const today = new Date();
+    const currentDay = today.getDay();
+    const diff = currentDay === 0 ? 0 : 7 - currentDay;
+    const nextSunday = new Date(today);
+    nextSunday.setDate(today.getDate() + diff);
+    return nextSunday;
+  };
+
+  const handleSyncWeeklyPlan = () => {
+    if (!data || data.length === 0) return;
+    setIsWeeklySimulating(true);
+    setWeeklySimProgress(0);
+    playBeep();
+    hablar("Iniciando simulación cinético-neumática para la suite semanal Barcel. Procesando 100 mil trayectorias.");
+
+    let currentProgress = 0;
+    const interval = setInterval(() => {
+      currentProgress += 10;
+      setWeeklySimProgress(currentProgress);
+      if (currentProgress % 30 === 0) playBeep();
+      
+      if (currentProgress >= 100) {
+        clearInterval(interval);
+        
+        const daysOfWeek = [
+          { name: "Domingo", offset: 0 },
+          { name: "Lunes", offset: 1 },
+          { name: "Martes", offset: 2 },
+          { name: "Miércoles", offset: 3 },
+          { name: "Jueves", offset: 4 },
+          { name: "Viernes", offset: 5 },
+          { name: "Sábado", offset: 6 }
+        ];
+        
+        const freq = calculateFrequencies(data);
+        const hotNumbers = freq.map(f => f.number);
+        const top15 = hotNumbers.slice(0, 15);
+        
+        const baseDate = getNextSundayDate();
+        const plan: any[] = [];
+        
+        daysOfWeek.forEach((day, index) => {
+          const currentDate = new Date(baseDate);
+          currentDate.setDate(baseDate.getDate() + day.offset);
+          const dateString = currentDate.toLocaleDateString("es-MX", { day: "numeric", month: "short", year: "numeric" });
+          
+          const seed3PM = index * 3 + 7;
+          const numbers3PM = shuffleAndSelect(top15, seed3PM);
+          const mc3PM = calculateMonteCarloCombinationProbability(numbers3PM, BALL_WEIGHTS);
+          
+          const seed9PM = index * 7 + 13;
+          const numbers9PM = shuffleAndSelect(top15, seed9PM);
+          const mc9PM = calculateMonteCarloCombinationProbability(numbers9PM, BALL_WEIGHTS);
+          
+          plan.push({
+            dayName: day.name,
+            dateStr: dateString,
+            time3PM: numbers3PM,
+            prob3PM: mc3PM.probability,
+            synergy3PM: mc3PM.suctionSynergy,
+            alg3PM: ["Puntería Balanceada CDMX", "Inercia Térmica Diurna", "Divergencia Neumática", "Ancla de Masa Pluma", "Vórtice Dinámico 3PM"][index % 5],
+            time9PM: numbers9PM,
+            prob9PM: mc9PM.probability,
+            synergy9PM: mc9PM.suctionSynergy,
+            alg9PM: ["Resonancia Orbital Clásica", "Fórmula Antifrágil", "Compensación Mandel", "Exclusión de Anclajes", "Singularidad Markov-X"][index % 5]
+          });
+        });
+        
+        setWeeklyPlan(plan);
+        localStorage.setItem('quantum_weekly_plan', JSON.stringify(plan));
+        setIsWeeklySimulating(false);
+        hablar("Sincronización completada. Plan de ataque semanal Barcel listo para exportación.");
+      }
+    }, 200);
+  };
+
+  const handleCopyWeeklyPlanToClipboard = () => {
+    if (!weeklyPlan) return;
+    
+    let text = `🔮 PLAN_DE_ATAQUE_SEMANAL_CHISPAZO_AI_PRO 🔮\n`;
+    text += `Para: Semana del ${weeklyPlan[0].dateStr} al ${weeklyPlan[6].dateStr}\n\n`;
+    text += `⚡ Listo para ganar en Barcel 🥨⚡\n\n`;
+    
+    weeklyPlan.forEach(p => {
+      text += `📅 ${p.dayName.toUpperCase()} (${p.dateStr})\n`;
+      text += `🕒 15:00 hrs: [ ${p.time3PM.map((n: number) => String(n).padStart(2, '0')).join(' - ')} ]\n`;
+      text += `   ↳ Prob: ${p.prob3PM}% | Sinergia: ${p.synergy3PM}% | ${p.alg3PM}\n`;
+      text += `Organizer 🕘 21:00 hrs: [ ${p.time9PM.map((n: number) => String(n).padStart(2, '0')).join(' - ')} ]\n`;
+      text += `   ↳ Prob: ${p.prob9PM}% | Sinergia: ${p.synergy9PM}% | ${p.alg9PM}\n`;
+      text += `------------------------------------------\n`;
+    });
+    
+    text += `🚀 Generado con modelos computacionales cuánticos Quantum AI CDMX.`;
+    
+    navigator.clipboard.writeText(text);
+    alert("¡Plan semanal copiado exitosamente en formato de WhatsApp, socio! Pégalo en tu chat.");
+  };
+
+  const handleSaveAllWeeklyToWallet = () => {
+    if (!weeklyPlan) return;
+    
+    const newTickets: SavedTicket[] = [];
+    weeklyPlan.forEach(p => {
+      const id3PM = `W3-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+      newTickets.push({
+        id: id3PM,
+        date: `${p.dayName} 15:00`,
+        numbers: [...p.time3PM],
+        type: 'simple'
+      });
+      const id9PM = `W9-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+      newTickets.push({
+        id: id9PM,
+        date: `${p.dayName} 21:00`,
+        numbers: [...p.time9PM],
+        type: 'simple'
+      });
+    });
+    
+    const statsUpdate: Record<string, SimulationResult> = {};
+    newTickets.forEach(t => {
+      statsUpdate[t.id] = runSimulation(t.numbers, data);
+    });
+    
+    setTicketStats(prev => ({ ...prev, ...statsUpdate }));
+    setMyTickets(prev => [...newTickets, ...prev]);
+    
+    hablar("Los catorce vectores semanales han sido sellados e insertados en tu cartera de auditoría, socio.");
+    alert("¡Socio! Se han guardado 14 jugadas de toda la semana en tu Cartera para que las revises cuando quieras.");
+  };
+
   const handleClearWallet = () => {
     if (window.confirm("¿Estás seguro de vaciar toda tu cartera de tickets? Esta acción no se puede deshacer.")) {
       setMyTickets([]);
@@ -1052,9 +1326,52 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
   if (loading) return <div className="flex flex-col items-center justify-center h-screen bg-slate-950 text-white"><div className="w-16 h-16 border-4 border-amber-600 border-t-transparent rounded-full animate-spin"></div></div>;
 
   return (
-    <div className="min-h-screen pb-24 md:pb-0 md:pl-64 bg-slate-950 text-slate-100 font-sans selection:bg-amber-500/30">
+    <div className="min-h-screen pb-28 md:pb-0 md:pl-64 bg-slate-950 text-slate-100 font-sans selection:bg-amber-500/30 touch-pan-y overscroll-y-contain">
       
-      {/* Sidebar Navigation */}
+      {/* Mobile Top Header */}
+      <header className="md:hidden flex items-center justify-between px-4 py-3 bg-slate-900/90 border-b border-slate-800 sticky top-0 z-40 backdrop-blur-md">
+        <div className="flex items-center space-x-2 cursor-pointer" onClick={() => { setView('dashboard'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
+          <div className="bg-amber-600 p-1.5 rounded-lg text-white">
+            <i className="fas fa-microchip text-sm"></i>
+          </div>
+          <h1 className="text-base font-black tracking-tighter uppercase italic">
+            Quantum <span className="text-amber-500">AI</span>
+          </h1>
+        </div>
+        <VoiceControl />
+      </header>
+
+      {/* Bottom Mobile Navigation Bar for Honor/Android */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-xl border-t border-slate-800/80 z-50 px-2 pt-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-between overflow-x-auto gap-1 shadow-[0_-5px_25px_rgba(0,0,0,0.6)] [scrollbar-width:none] [-webkit-overflow-scrolling:touch] touch-pan-x overscroll-x-contain">
+        {[
+          { id: 'dashboard' as ViewState, label: 'Terminal', fa: 'fa-house' },
+          { id: 'backtesting' as ViewState, label: 'Forense', fa: 'fa-microscope' },
+          { id: 'generator' as ViewState, label: 'Optimizador', fa: 'fa-wand-magic-sparkles' },
+          { id: 'weekly' as ViewState, label: 'Plan Semanal', fa: 'fa-calendar-days' },
+          { id: 'tickets' as ViewState, label: 'Cartera', fa: 'fa-briefcase' },
+          { id: 'history' as ViewState, label: 'Historial', fa: 'fa-database' },
+          { id: 'docs' as ViewState, label: 'Informe', fa: 'fa-file-contract' },
+          { id: 'vision' as ViewState, label: 'Visión', fa: 'fa-brain' }
+        ].map((item) => (
+          <button
+            key={item.id}
+            onClick={() => {
+              setView(item.id);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className={`flex flex-col items-center justify-center min-h-[48px] py-1 px-2.5 rounded-2xl transition-all min-w-[58px] active:scale-95 touch-manipulation select-none shrink-0 ${
+              view === item.id 
+                ? 'text-amber-400 bg-amber-500/20 font-bold border border-amber-500/40 shadow-lg shadow-amber-500/15' 
+                : 'text-slate-400 hover:text-slate-200 active:bg-slate-800/50'
+            }`}
+          >
+            <i className={`fas ${item.fa} text-base mb-0.5`}></i>
+            <span className="text-[10px] tracking-tight whitespace-nowrap font-medium">{item.label}</span>
+          </button>
+        ))}
+      </nav>
+
+      {/* Sidebar Navigation (Desktop) */}
       <nav className="hidden md:flex flex-col fixed left-0 top-0 bottom-0 w-64 bg-slate-900 border-r border-slate-800 p-6 z-50">
         <div className="flex items-center space-x-3 mb-12 px-2 cursor-pointer group" onClick={() => setView('dashboard')}>
           <div className="bg-amber-600 p-2 rounded-xl shadow-lg shadow-amber-600/20 group-hover:rotate-12 transition-all duration-500"><i className="fas fa-microchip text-white text-xl"></i></div>
@@ -1066,6 +1383,7 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
             { id: 'dashboard' as ViewState, label: 'Terminal', fa: 'fa-house' },
             { id: 'backtesting' as ViewState, label: 'Forense', fa: 'fa-microscope' },
             { id: 'generator' as ViewState, label: 'Optimizador', fa: 'fa-wand-magic-sparkles' },
+            { id: 'weekly' as ViewState, label: 'Plan Semanal (Barcel)', fa: 'fa-calendar-days' },
             { id: 'tickets' as ViewState, label: 'Mi Cartera', fa: 'fa-briefcase' },
             { id: 'history' as ViewState, label: 'Historial Real', fa: 'fa-database' },
             { id: 'docs' as ViewState, label: 'Informe Técnico', fa: 'fa-file-contract' },
@@ -1115,12 +1433,131 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
         {view === 'knowledge' && <KnowledgeBase />}
 
         {/* VIEW: BACKTESTING FORENSE */}
-        {view === 'backtesting' && <BacktestingForense />}
+        {view === 'backtesting' && <BacktestingForense draws={data} />}
 
         {/* VIEW: DASHBOARD */}
         {view === 'dashboard' && (
           <div className="space-y-10 animate-in fade-in duration-700">
-             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* SERVICIO DE ALERTAS MONTE CARLO > 85% */}
+            {mcNotification && mcNotification.isActive && (
+              <div className="bg-red-950/40 border border-red-500/50 p-6 md:p-8 rounded-[2.5rem] relative overflow-hidden shadow-[0_0_50px_rgba(239,68,68,0.15)] animate-in zoom-in-95 duration-500">
+                <div className="absolute top-0 right-0 p-4 opacity-10">
+                  <i className="fas fa-satellite-dish text-8xl text-red-500"></i>
+                </div>
+                
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                      <span className="w-3 h-3 bg-red-500 rounded-full animate-ping"></span>
+                      <span className="bg-red-500/20 text-red-400 text-[10px] font-black px-3 py-1.5 rounded-full border border-red-500/30 uppercase tracking-widest flex items-center gap-2">
+                        <i className="fas fa-exclamation-triangle"></i>
+                        ALERTA CRÍTICA MONTE CARLO
+                      </span>
+                      <span className="text-slate-500 text-[10px] font-mono">{mcNotification.timestamp}</span>
+                    </div>
+                    
+                    <h3 className="text-2xl md:text-3xl font-black text-white tracking-tighter uppercase leading-tight">
+                      Desviación Gravitacional de Alta Probabilidad ({mcNotification.probability}%)
+                    </h3>
+                    
+                    <p className="text-slate-300 text-sm max-w-3xl leading-relaxed">
+                      El modelo de 10,000 trayectorias cinéticas proyecta una resonancia orbital excepcional para el canal de succión en CDMX. Se estima una probabilidad de al menos un acoplamiento táctico del <strong className="text-red-400">{mcNotification.atLeast1Match}%</strong> y una Sinergia de Succión de <strong className="text-red-400">{mcNotification.suctionSynergy}%</strong>.
+                    </p>
+                    
+                    <div className="flex flex-wrap items-center gap-3 mt-2">
+                      <span className="text-slate-500 font-black text-[9px] uppercase tracking-wider block">Coordenadas del Vector:</span>
+                      <div className="flex gap-2">
+                        {mcNotification.combination.map(n => (
+                          <NumberBall key={n} number={n} size="sm" />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="flex flex-row md:flex-col gap-3 w-full md:w-auto shrink-0 pt-2 md:pt-0">
+                    <button 
+                      onClick={handleSaveTicket}
+                      className="flex-1 md:flex-initial bg-emerald-600 hover:bg-emerald-500 hover:scale-105 active:scale-95 text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-emerald-600/30 transition-all flex items-center justify-center gap-2"
+                    >
+                      <i className="fas fa-bookmark"></i>
+                      Guardar en Cartera
+                    </button>
+                    <button 
+                      onClick={() => setMcNotification(prev => prev ? { ...prev, isActive: false } : null)}
+                      className="flex-1 md:flex-initial bg-slate-800 hover:bg-slate-700 text-slate-300 px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest border border-slate-700 hover:border-slate-600 transition-all flex items-center justify-center gap-2"
+                    >
+                      <i className="fas fa-times"></i>
+                      Descartar Alerta
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* SECCIÓN DEL CENTRO DE NOTIFICACIONES MONTE CARLO CONTROLES */}
+            <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+               <div className="absolute top-0 right-0 p-6 opacity-5">
+                 <i className="fas fa-poll text-8xl text-amber-500"></i>
+               </div>
+               
+               <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 border-b border-slate-800 pb-6 mb-6">
+                 <div>
+                   <h3 className="text-xl font-black text-white uppercase tracking-tight flex items-center gap-2">
+                     <span className="relative flex h-2.5 w-2.5">
+                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                       <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                     </span>
+                     Servicio de Notificaciones Monte Carlo
+                   </h3>
+                   <p className="text-slate-400 text-xs mt-1">Sincronizador continuo de masa orbital, arrastre neumático y resonancias de balota.</p>
+                 </div>
+                 <div className="bg-slate-950 border border-slate-800 rounded-2xl p-4 flex items-center gap-4">
+                   <div className="text-center">
+                     <span className="block text-[8px] font-black text-slate-500 uppercase">Vector Activo</span>
+                     <span className="font-mono text-xs text-amber-400 font-bold">{suggestion.join('-')}</span>
+                   </div>
+                   <div className="h-8 w-px bg-slate-800"></div>
+                   <div className="text-center">
+                     <span className="block text-[8px] font-black text-slate-500 uppercase">Probabilidad MC</span>
+                     <span className={`font-mono text-xs font-black ${calculateMonteCarloCombinationProbability(suggestion, BALL_WEIGHTS).probability >= 85 ? 'text-red-400 animate-pulse' : 'text-emerald-400'}`}>
+                       {calculateMonteCarloCombinationProbability(suggestion, BALL_WEIGHTS).probability}%
+                     </span>
+                   </div>
+                 </div>
+               </div>
+               
+               {mcNotificationHistory.length > 0 ? (
+                 <div className="space-y-4">
+                   <h4 className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Historial de Alertas de Alta Probabilidad (Sesión Activa)</h4>
+                   <div className="divide-y divide-slate-800/50">
+                     {mcNotificationHistory.map((hist, idx) => (
+                       <div key={idx} className="py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs">
+                         <div className="flex items-center gap-3">
+                           <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                           <span className="font-mono text-slate-500">[{hist.timestamp}]</span>
+                           <span className="bg-red-500/10 border border-red-500/20 text-[9px] font-black px-2 py-0.5 rounded text-red-400 uppercase tracking-wider">{hist.id}</span>
+                         </div>
+                         <div className="flex gap-1.5">
+                           {hist.combination.map(n => (
+                             <span key={n} className="w-5 h-5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 flex items-center justify-center font-bold text-[9px]">{n}</span>
+                           ))}
+                         </div>
+                         <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end">
+                           <span className="text-slate-400">Sinergia: <strong className="text-white">{hist.suctionSynergy}%</strong></span>
+                           <span className="bg-slate-950 font-bold border border-slate-800 text-amber-400 px-2.5 py-1 rounded-xl text-[10px]">{hist.probability}% Prob</span>
+                         </div>
+                       </div>
+                     ))}
+                   </div>
+                 </div>
+               ) : (
+                 <div className="text-center py-6 text-slate-500 text-xs italic">
+                   No se han registrado alertas de alta probabilidad en esta sesión. Ajusta la puntería o genera combinaciones cuánticas para buscar resonancia orbital.
+                 </div>
+               )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
                    <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Último Resultado #11917</span>
                    <div className="flex gap-2 mt-4 flex-wrap">
@@ -1359,6 +1796,246 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
           </div>
         )}
 
+        {/* VIEW: PLAN SEMANAL BARCEL SPEC */}
+        {view === 'weekly' && (
+          <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-8 bg-slate-900/50 p-10 rounded-[3rem] border border-slate-800 shadow-2xl backdrop-blur-sm">
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <span className="bg-amber-500/10 border border-amber-500/30 text-amber-400 font-extrabold text-[10px] px-3.5 py-1.5 rounded-full uppercase tracking-widest">
+                    <i className="fas fa-truck-fast mr-1.5"></i>
+                    Especial Sindicato Barcel
+                  </span>
+                  <span className="bg-slate-800 border border-slate-700 text-slate-400 font-mono text-[10px] px-3 py-1.5 rounded-full uppercase">
+                    v5.4 Quantum Grid
+                  </span>
+                </div>
+                <h2 className="text-4xl font-black text-white tracking-tighter uppercase italic">Planificador de Ataque Semanal</h2>
+                <p className="text-slate-400 font-medium italic">Simulación predictiva de 14 combinaciones simultáneas (Sorteos de las Tres y Clásico) sintonizados con el domo neumático de CDMX.</p>
+              </div>
+              <div className="shrink-0">
+                <button 
+                  disabled={isWeeklySimulating}
+                  onClick={handleSyncWeeklyPlan}
+                  className={`px-10 py-6 rounded-3xl font-black uppercase text-xs tracking-widest shadow-xl transition-all active:scale-95 flex items-center gap-3 ${isWeeklySimulating ? 'bg-slate-800 text-slate-500 cursor-not-allowed' : 'bg-gradient-to-r from-amber-600 to-amber-500 text-white shadow-amber-600/20 hover:scale-105 hover:from-amber-500 hover:to-amber-400'}`}
+                >
+                  <i className={`fas ${isWeeklySimulating ? 'fa-spinner fa-spin' : 'fa-wand-magic-sparkles'}`}></i>
+                  {isWeeklySimulating ? `Simulando ${weeklySimProgress}%` : 'Sincronizar Suite Semanal'}
+                </button>
+              </div>
+            </header>
+
+            {/* BARRA DE PROGRESO DE SIMULACIÓN */}
+            {isWeeklySimulating && (
+              <div className="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-10 text-center space-y-6 shadow-2xl animate-pulse">
+                <div className="w-16 h-16 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                <div className="space-y-2">
+                  <h3 className="text-lg font-black text-white uppercase tracking-widest italic">Corriendo Simulación de 100,000 Trayectorias</h3>
+                  <p className="text-slate-400 text-xs text-center max-w-md mx-auto">
+                    Ajustando coeficientes de masa cinética, arrastre de succionadores en CDMX y variación térmica solar semanal.
+                  </p>
+                </div>
+                <div className="w-full bg-slate-950 rounded-full h-3 border border-slate-800 max-w-lg mx-auto overflow-hidden">
+                  <div 
+                    className="bg-gradient-to-r from-amber-600 to-amber-400 h-full rounded-full transition-all duration-300"
+                    style={{ width: `${weeklySimProgress}%` }}
+                  ></div>
+                </div>
+                <span className="block font-mono text-xs text-amber-500 font-black">{weeklySimProgress}% Completado</span>
+              </div>
+            )}
+
+            {!isWeeklySimulating && !weeklyPlan && (
+              <div className="bg-slate-900/60 border border-slate-800 rounded-[3rem] p-12 text-center max-w-4xl mx-auto space-y-6 shadow-xl">
+                <div className="bg-slate-950 w-20 h-20 rounded-full flex items-center justify-center border border-slate-800 mx-auto text-amber-500">
+                  <i className="fas fa-calendar-week text-3xl"></i>
+                </div>
+                <div className="space-y-3">
+                  <h3 className="text-xl font-black text-white uppercase tracking-tight">Socio, ¡Organiza tu jugada de la semana!</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed max-w-2xl mx-auto">
+                    Entendemos que laborar en Barcel te limita el tiempo diario. No te preocupes: con esta herramienta puedes simular de una sola vez las 14 combinaciones recomendadas para toda la semana (de Domingo a Sábado). Podrás copiarlas a tu WhatsApp o sellar todas en tu Cartera con un solo botón.
+                  </p>
+                </div>
+                <button 
+                  onClick={handleSyncWeeklyPlan}
+                  className="bg-amber-600 hover:bg-amber-500 text-white px-10 py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg shadow-amber-600/30 transition-all"
+                >
+                  Generar Plan Semanal Adelantado
+                </button>
+              </div>
+            )}
+
+            {!isWeeklySimulating && weeklyPlan && (
+              <div className="space-y-8 animate-in fade-in duration-500">
+                {/* ACCIONES DEL JUEGO COMPLETO */}
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-slate-900 border border-slate-800 px-8 py-6 rounded-[2rem] shadow-lg">
+                  <div>
+                    <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest block">Acciones Globales de la Suite</span>
+                    <h4 className="text-xs font-bold text-slate-300 mt-0.5">Semana del: <strong className="text-white">{weeklyPlan[0].dateStr}</strong> al <strong className="text-white">{weeklyPlan[6].dateStr}</strong></h4>
+                  </div>
+                  <div className="flex flex-wrap gap-3 w-full sm:w-auto">
+                    <button 
+                      onClick={handleCopyWeeklyPlanToClipboard}
+                      className="flex-1 sm:flex-initial bg-slate-800 border border-slate-700 hover:border-slate-600 hover:bg-slate-700 text-amber-400 px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 transition-all active:scale-95"
+                    >
+                      <i className="fas fa-copy"></i>
+                      Copiar Formato WhatsApp
+                    </button>
+                    <button 
+                      onClick={handleSaveAllWeeklyToWallet}
+                      className="flex-1 sm:flex-initial bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition-all active:scale-95"
+                    >
+                      <i className="fas fa-bookmark"></i>
+                      Sellar Todo en Cartera
+                    </button>
+                  </div>
+                </div>
+
+                {/* RECOMENDACIÓN ESTRATÉGICA */}
+                <div className="bg-amber-950/20 border border-amber-500/30 p-6 md:p-8 rounded-[2rem] flex items-start gap-4">
+                  <div className="bg-amber-500/10 p-3 rounded-xl border border-amber-500/20 text-amber-500 shrink-0">
+                    <i className="fas fa-briefcase"></i>
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-amber-400 uppercase tracking-wider mb-1">RECOMENDACIÓN TÁCTICA BARCEL (VÍA SOCIO)</h4>
+                    <p className="text-slate-300 text-xs leading-relaxed">
+                      Socio, debido a los horarios demandantes en Barcel, lo mejor es acudir el **domingo por la mañana** (o el lunes temprano) al expendio de lotería o ingresar a la plataforma digital oficial y **comprar por adelantado los 14 boletos** de toda la semana. Guarda este plan en tu celular o celular de confianza y deja que la inercia cuántica haga su magia mientras tú laboras con éxito.
+                    </p>
+                  </div>
+                </div>
+
+                {/* THE 7-DAY PARRILLA GRID */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {weeklyPlan.map((p, idx) => (
+                    <div 
+                      key={idx} 
+                      className="bg-slate-900 border border-slate-800 rounded-[2.5rem] p-8 shadow-xl relative overflow-hidden flex flex-col justify-between focus-within:border-slate-700 transition-colors"
+                    >
+                      <div className="absolute top-0 right-0 p-6 opacity-5 pointer-events-none">
+                        <i className="fas fa-calendar-day text-7xl text-amber-500"></i>
+                      </div>
+
+                      {/* Header tarjeta */}
+                      <div className="flex justify-between items-center border-b border-slate-800 pb-5 mb-5 relative z-10">
+                        <div>
+                          <span className="bg-amber-500/10 text-amber-500 font-black text-[9px] px-2.5 py-1 rounded-md uppercase tracking-wider mb-1 inline-block">
+                            DÍA {idx + 1} DE 7
+                          </span>
+                          <h3 className="text-xl font-black text-white uppercase italic tracking-tighter">
+                            {p.dayName}
+                          </h3>
+                        </div>
+                        <span className="text-slate-500 text-[10px] font-mono tracking-tight font-extrabold">
+                          {p.dateStr}
+                        </span>
+                      </div>
+
+                      {/* Sorteos */}
+                      <div className="space-y-6 relative z-10">
+                        {/* 15:00 hrs (Sorteo de las Tres) */}
+                        <div className="bg-slate-950/50 border border-slate-800/80 p-5 rounded-2xl space-y-3.5">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <i className="fas fa-sun text-amber-500 text-xs text-amber-500"></i>
+                              <span className="text-[10px] font-black uppercase text-slate-300 tracking-wider">
+                                Sorteo de las Tres (15:00 hrs)
+                              </span>
+                            </div>
+                            <span className="text-[9px] text-slate-500 uppercase font-bold italic">
+                              {p.alg3PM}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex gap-1.5">
+                              {p.time3PM.map((n: number) => (
+                                <NumberBall key={n} number={n} size="sm" />
+                              ))}
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="text-right">
+                                <span className="block text-[8px] font-black text-slate-500 uppercase">Sinergia MC</span>
+                                <span className="font-mono text-[10px] text-amber-550 font-black text-amber-500">{p.prob3PM}% Prob</span>
+                              </div>
+                              <button 
+                                onClick={() => {
+                                  const tId = `W3-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+                                  setMyTickets(prev => [{
+                                    id: tId,
+                                    date: `${p.dayName} 15:00`,
+                                    numbers: [...p.time3PM],
+                                    type: 'simple'
+                                  }, ...prev]);
+                                  const stats = runSimulation(p.time3PM, data);
+                                  setTicketStats(prev => ({ ...prev, [tId]: stats }));
+                                  playBeep();
+                                  alert(`¡Listo socio! Jugada 3PM de ${p.dayName} guardada en tu Cartera.`);
+                                }}
+                                className="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2.5 rounded-xl border border-slate-700 hover:border-slate-600 transition-colors flex items-center justify-center"
+                                title="Añadir esta jugada a mi cartera"
+                              >
+                                <i className="fas fa-bookmark text-[9px]"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* 21:00 hrs (Sorteo Clásico) */}
+                        <div className="bg-slate-950/50 border border-slate-800/80 p-5 rounded-2xl space-y-3.5">
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <i className="fas fa-moon text-indigo-400 text-xs"></i>
+                              <span className="text-[10px] font-black uppercase text-slate-300 tracking-wider">
+                                Sorteo Clásico (21:00 hrs)
+                              </span>
+                            </div>
+                            <span className="text-[9px] text-slate-500 uppercase font-bold italic">
+                              {p.alg9PM}
+                            </span>
+                          </div>
+
+                          <div className="flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex gap-1.5">
+                              {p.time9PM.map((n: number) => (
+                                <NumberBall key={n} number={n} size="sm" />
+                              ))}
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="text-right">
+                                <span className="block text-[8px] font-black text-slate-500 uppercase">Sinergia MC</span>
+                                <span className="font-mono text-[10px] text-amber-550 font-black text-amber-500">{p.prob9PM}% Prob</span>
+                              </div>
+                              <button 
+                                onClick={() => {
+                                  const tId = `W9-${Math.random().toString(36).substr(2, 4).toUpperCase()}`;
+                                  setMyTickets(prev => [{
+                                    id: tId,
+                                    date: `${p.dayName} 21:00`,
+                                    numbers: [...p.time9PM],
+                                    type: 'simple'
+                                  }, ...prev]);
+                                  const stats = runSimulation(p.time9PM, data);
+                                  setTicketStats(prev => ({ ...prev, [tId]: stats }));
+                                  playBeep();
+                                  alert(`¡Listo socio! Jugada 9PM de ${p.dayName} guardada en tu Cartera.`);
+                                }}
+                                className="bg-slate-800 hover:bg-slate-700 text-slate-300 p-2.5 rounded-xl border border-slate-700 hover:border-slate-600 transition-colors flex items-center justify-center"
+                                title="Añadir esta jugada a mi cartera"
+                              >
+                                <i className="fas fa-bookmark text-[9px]"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* VIEW: TICKETS */}
         {view === 'tickets' && (
           <div className="space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
@@ -1513,10 +2190,11 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                 <button onClick={() => { setGenMode('simple'); setSuggestion([]); }} className={`px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest transition-all ${genMode === 'simple' ? 'bg-amber-600 text-white shadow-xl shadow-amber-600/30' : 'text-slate-400 hover:text-slate-200'}`}>Quantum 5</button>
                 <button onClick={() => { setGenMode('multiple6'); setSuggestion([]); }} className={`px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest transition-all ${genMode === 'multiple6' ? 'bg-amber-600 text-white shadow-xl shadow-amber-600/30' : 'text-slate-400 hover:text-slate-200'}`}>Múltiple 6</button>
                 <button onClick={() => { setGenMode('quantum'); setSuggestion([]); }} className={`px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest transition-all ${genMode === 'quantum' ? 'bg-amber-600 text-white shadow-xl shadow-amber-600/30' : 'text-slate-400 hover:text-slate-200'}`}>Múltiple 7 (GOD-X)</button>
+                <button onClick={() => { setGenMode('grail'); setSuggestion([]); }} className={`px-8 py-4 rounded-[2rem] text-[10px] font-black uppercase tracking-widest transition-all ${genMode === 'grail' ? 'bg-gradient-to-r from-emerald-600 to-amber-600 text-white shadow-xl shadow-emerald-500/20' : 'text-slate-400 hover:text-slate-200'}`}>Santo Grial V12</button>
               </div>
             </header>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-12">
                <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl">
                   <h4 className="text-amber-500 font-black text-[9px] uppercase tracking-widest mb-2">Modo Quantum 5</h4>
                   <p className="text-slate-400 text-[10px] leading-relaxed italic">Análisis heurístico local. Ideal para jugadas rápidas basadas en ROI histórico.</p>
@@ -1532,6 +2210,10 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                <div className="bg-slate-900/50 border border-slate-800 p-6 rounded-3xl">
                   <h4 className="text-amber-500 font-black text-[9px] uppercase tracking-widest mb-2">Search Grounding</h4>
                   <p className="text-slate-400 text-[10px] leading-relaxed italic">Sincroniza tendencias reales de la web para validar la inercia térmica.</p>
+               </div>
+               <div className="bg-gradient-to-b from-emerald-950/20 to-amber-950/20 border border-emerald-500/20 p-6 rounded-3xl col-span-1 md:col-span-3 lg:col-span-1">
+                  <h4 className="text-emerald-400 font-black text-[9px] uppercase tracking-widest mb-2">Santo Grial V12</h4>
+                  <p className="text-slate-300 text-[10px] leading-relaxed italic">Aplica todas las leyes, física de masa, Markov, entropía y Taleb en un único tiro perfecto de 5 cifras.</p>
                </div>
             </div>
 
@@ -1641,6 +2323,14 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                       >
                         {isCausalLoading ? <i className="fas fa-spinner fa-spin mr-3"></i> : <i className="fas fa-dna mr-3"></i>}
                         Evolución Causal (Pearl)
+                      </button>
+                      <button 
+                        onClick={handleAnticipationVector} 
+                        disabled={isAnticipationLoading}
+                        className={`px-12 py-8 rounded-[3rem] font-black uppercase tracking-[0.2em] text-sm transition-all shadow-2xl active:scale-95 border-2 ${isAnticipationLoading ? 'bg-slate-800 border-slate-700 text-slate-500' : 'bg-purple-900/20 border-purple-500/50 text-purple-400 hover:bg-purple-900/40'}`}
+                      >
+                        {isAnticipationLoading ? <i className="fas fa-spinner fa-spin mr-3"></i> : <i className="fas fa-bolt mr-3"></i>}
+                        Vector de Anticipación (Orbital)
                       </button>
                     </div>
 
@@ -2071,6 +2761,53 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                         </div>
                       )}
 
+                      {anticipationResult && (
+                        <div className="max-w-2xl mx-auto mb-12 animate-in fade-in slide-in-from-top-4 duration-700">
+                          <div className="p-8 rounded-[3rem] border border-purple-500/30 bg-purple-950/20 space-y-6">
+                            <div className="flex items-start gap-6">
+                              <div className="w-16 h-16 rounded-full flex items-center justify-center flex-shrink-0 font-black text-xl bg-purple-500 text-slate-950">
+                                <i className="fas fa-bolt"></i>
+                              </div>
+                              <div className="text-left flex-1">
+                                <h5 className="font-black text-[10px] uppercase tracking-widest mb-1 text-purple-400">
+                                  Vector de Anticipación (Filtro Antianclaje)
+                                </h5>
+                                <p className="text-slate-300 text-sm italic leading-relaxed">
+                                  {anticipationResult.explanation}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* Mostrar Nodos Excluidos (Anclas) */}
+                            {anticipationResult.excludedAnchors.length > 0 && (
+                              <div className="bg-slate-950/40 border border-slate-800/60 p-5 rounded-[2rem]">
+                                <div className="text-left text-[10px] font-black tracking-widest text-purple-400 uppercase mb-3 flex items-center gap-2">
+                                  <i className="fas fa-ban text-red-500"></i>
+                                  Nodos Ancla de los Últimos 3 Sorteos Excluidos (Pruning Activo):
+                                </div>
+                                <div className="flex flex-wrap gap-2 justify-start">
+                                  {anticipationResult.excludedAnchors.map(n => (
+                                    <span key={n} className="inline-flex items-center justify-center w-8 h-8 text-[11px] font-black bg-red-950/40 border border-red-500/30 text-red-400 rounded-full shadow-lg">
+                                      {n}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Mostrar Coordenadas Calculadas */}
+                            <div className="bg-slate-950/50 p-6 rounded-[2rem] border border-purple-500/10 flex flex-col items-center gap-3">
+                              <span className="text-[9px] font-black tracking-widest text-slate-500 uppercase">Coordenadas del Vector de Anticipación:</span>
+                              <div className="flex justify-center gap-3">
+                                {anticipationResult.numbers.map(n => (
+                                  <NumberBall key={n} number={n} size="md" />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
                       {maletinSignature && (
                         <div className="max-w-2xl mx-auto mb-12 animate-in fade-in slide-in-from-top-4 duration-1000 delay-300">
                           <div className={`p-8 rounded-[3rem] border flex flex-col md:flex-row items-center gap-8 ${maletinSignature.currentRegime === 'LIGERO' ? 'bg-cyan-500/10 border-cyan-500/30' : 'bg-rose-500/10 border-rose-500/30'}`}>
@@ -2091,6 +2828,88 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                                 {maletinSignature.detectedSignature} El análisis forense sugiere que los movimientos actuales corresponden a una peculiaridad de **Inercia Térmica**.
                               </p>
                             </div>
+                          </div>
+                        </div>
+                      )}
+
+                      {genMode === 'grail' && holyGrail && (
+                        <div className="max-w-4xl mx-auto mb-12 animate-in fade-in slide-in-from-top-6 duration-1000">
+                          <div className="bg-gradient-to-br from-emerald-950/20 via-zinc-900/50 to-amber-950/20 border-2 border-emerald-500/30 p-10 rounded-[3rem] shadow-2xl space-y-8 relative overflow-hidden text-left">
+                            <div className="absolute top-0 right-0 p-6 opacity-5">
+                              <i className="fas fa-gavel text-9xl"></i>
+                            </div>
+
+                            <div className="flex flex-col md:flex-row justify-between items-center border-b border-emerald-500/20 pb-6 gap-4">
+                              <div className="text-center md:text-left">
+                                <span className="bg-emerald-500/10 text-emerald-400 text-[10px] font-black px-4 py-1.5 rounded-full border border-emerald-500/30 uppercase tracking-[0.2em]">
+                                  Santo Grial V12.0
+                                </span>
+                                <h4 className="text-2xl font-black text-white uppercase italic tracking-tighter mt-2">
+                                  La Unificación de las 6 Leyes Matemático-Físicas
+                                </h4>
+                              </div>
+                              <span className="bg-amber-500 text-zinc-950 text-[11px] font-black px-4 py-2 rounded-xl h-fit shadow-md tracking-wider uppercase">
+                                UNIFICACIÓN CONFIRMADA
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 text-center">
+                              <div className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl">
+                                <span className="block text-[8px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Entropía Shannon</span>
+                                <span className="text-xs font-black text-emerald-400">{holyGrail.scores.entropy} bits</span>
+                              </div>
+                              <div className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl">
+                                <span className="block text-[8px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Convexidad (H)</span>
+                                <span className="text-xs font-black text-amber-500">+{holyGrail.scores.convection}</span>
+                              </div>
+                              <div className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl">
+                                <span className="block text-[8px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Inercia Térmica</span>
+                                <span className="text-xs font-black text-cyan-400">{holyGrail.scores.thermalInertia}x</span>
+                              </div>
+                              <div className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl">
+                                <span className="block text-[8px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Markov bits</span>
+                                <span className="text-xs font-black text-purple-400">{holyGrail.scores.markovStrength}</span>
+                              </div>
+                              <div className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl">
+                                <span className="block text-[8px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Pureza Antisesgo</span>
+                                <span className="text-xs font-black text-emerald-500">{holyGrail.scores.humanBias}%</span>
+                              </div>
+                              <div className="bg-slate-950/60 border border-slate-800 p-4 rounded-2xl">
+                                <span className="block text-[8px] font-bold text-zinc-500 uppercase tracking-wider mb-1">Causal Pearl</span>
+                                <span className="text-xs font-black text-pink-400">{holyGrail.scores.causalProbability}</span>
+                              </div>
+                            </div>
+
+                            <div className="space-y-4 pt-4 border-t border-slate-800">
+                              <h5 className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.3em] italic mb-2">Desglose de Auditoría Multidimensional:</h5>
+                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800 flex gap-3 text-xs italic leading-snug">
+                                  <div className="w-2 h-2 rounded-full bg-emerald-500 mt-1 flex-shrink-0 animate-ping"></div>
+                                  <span className="text-zinc-300">{holyGrail.constituentAudit.lawOfMass}</span>
+                                </div>
+                                <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800 flex gap-3 text-xs italic leading-snug">
+                                  <div className="w-2 h-2 rounded-full bg-amber-500 mt-1 flex-shrink-0 animate-ping"></div>
+                                  <span className="text-zinc-300">{holyGrail.constituentAudit.lawOfThermalInertia}</span>
+                                </div>
+                                <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800 flex gap-3 text-xs italic leading-snug">
+                                  <div className="w-2 h-2 rounded-full bg-purple-500 mt-1 flex-shrink-0"></div>
+                                  <span className="text-zinc-300">{holyGrail.constituentAudit.lawOfMarkov}</span>
+                                </div>
+                                <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800 flex gap-3 text-xs italic leading-snug">
+                                  <div className="w-2 h-2 rounded-full bg-orange-500 mt-1 flex-shrink-0 animate-ping"></div>
+                                  <span className="text-zinc-300">{holyGrail.constituentAudit.lawOfAntifragility}</span>
+                                </div>
+                                <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800 flex gap-3 text-xs italic leading-snug">
+                                  <div className="w-2 h-2 rounded-full bg-cyan-500 mt-1 flex-shrink-0 animate-ping"></div>
+                                  <span className="text-zinc-300">{holyGrail.constituentAudit.lawOfShannon}</span>
+                                </div>
+                                <div className="bg-slate-950/40 p-4 rounded-xl border border-slate-800 flex gap-3 text-xs italic leading-snug">
+                                  <div className="w-2 h-2 rounded-full bg-pink-500 mt-1 flex-shrink-0"></div>
+                                  <span className="text-zinc-300">{holyGrail.constituentAudit.lawOfCausality}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <p className="text-slate-400 text-xs text-center italic">{holyGrail.explanation}</p>
                           </div>
                         </div>
                       )}
@@ -2128,6 +2947,26 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                     </div>
                  </div>
                )}
+
+               <OfflineExportCenter
+                 historicalData={data}
+                 suggestion={suggestion}
+                 genMode={genMode}
+                 holyGrail={holyGrail}
+                 mandelCombos={mandelCombos}
+                 scenarioResults={scenarioResults}
+                 debtResults={debtResults}
+                 deepSimResults={deepSimResults}
+                 markovContrast={markovContrast}
+                 anticipationResult={anticipationResult}
+                 quantum5={quantum5}
+                 aiInsight={aiInsight}
+                 simResult={simResult}
+                 certeza={certeza}
+                 biasAnalysis={biasAnalysis}
+                 antifragilityResult={antifragilityResult}
+                 causalDiagnostics={causalDiagnostics}
+               />
             </div>
            </div>
         )}
@@ -2150,6 +2989,132 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                   </p>
                 </div>
               </header>
+
+              {/* DIAGNÓSTICOS DEL PUENTE MAKE.COM */}
+              <div className="p-8 rounded-[3rem] border border-slate-800 bg-slate-900/40 text-left space-y-6 shadow-2xl backdrop-blur-md">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                  <div className="space-y-1">
+                    <h3 className="text-xl font-black text-purple-400 tracking-tight uppercase italic flex items-center gap-3">
+                      <i className="fas fa-plug animate-pulse"></i> Puente de Sincronización (Make.com)
+                    </h3>
+                    <p className="text-slate-400 text-xs italic leading-normal">
+                      Monitoreo predictivo y autodiagnóstico del enlace de datos para auditorías automatizadas.
+                    </p>
+                  </div>
+                  <div className="flex gap-3">
+                    <button 
+                      onClick={fetchWebhookDiagnostics}
+                      disabled={isDiagLoading}
+                      className="bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 px-6 py-3 rounded-2xl font-black text-[10px] tracking-widest uppercase transition-all shadow-md active:scale-95 flex items-center gap-2"
+                    >
+                      <i className={`fas fa-sync ${isDiagLoading ? 'animate-spin' : ''}`}></i>
+                      Probar Puente (Refrescar)
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                  {/* Direcciones y Configuración */}
+                  <div className="lg:col-span-5 space-y-4">
+                    <span className="block text-[9px] font-black text-slate-500 uppercase tracking-widest">Enlace de Recepción Webhook:</span>
+                    <div className="p-5 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-3 font-mono text-[11px] text-slate-300">
+                      <div className="space-y-1">
+                        <span className="block text-[8px] font-black uppercase text-purple-500">URL Preferente de Make:</span>
+                        <code className="text-purple-300 break-all bg-purple-950/20 px-2 py-1 rounded select-all block mt-1">
+                          {window.location.origin}/api/sync-automatic
+                        </code>
+                      </div>
+                      <div className="pt-2 border-t border-slate-900 space-y-1">
+                        <span className="block text-[8px] font-black text-slate-400 uppercase">Método Requerido:</span>
+                        <span className="inline-block px-2 py-0.5 bg-purple-950 text-purple-400 font-bold rounded-md text-[10px]">POST</span>
+                      </div>
+                      <div className="pt-2 border-t border-slate-900 space-y-1">
+                        <span className="block text-[8px] font-black text-slate-400 uppercase font-bold">Nomenclatura flexible (Adaptador Activo):</span>
+                        <p className="text-slate-400 text-[9px] leading-relaxed italic font-sans">
+                          No te preocupes por el mapeo exacto. El búnker decodifica automáticamente variables como <code className="font-mono">concurso</code> o <code className="font-mono">sorteo</code>, y listas de números o strings separados por comas.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Estado del Puente en Tiempo Real */}
+                  <div className="lg:col-span-7 flex flex-col justify-start">
+                    {webhookDiagnostics && webhookDiagnostics.status !== "none" ? (
+                      <div className="p-6 rounded-2xl bg-slate-950/60 border border-slate-800 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">Última Transmisión de Make:</span>
+                          <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-wider border ${
+                            webhookDiagnostics.status === "success" 
+                              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" 
+                              : webhookDiagnostics.status === "ignored"
+                              ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
+                              : "bg-rose-500/10 border-rose-500/30 text-rose-400"
+                          }`}>
+                            <span className={`w-1.5 h-1.5 rounded-full ${
+                              webhookDiagnostics.status === "success" 
+                                ? "bg-emerald-400 animate-pulse" 
+                                : webhookDiagnostics.status === "ignored"
+                                ? "bg-amber-400"
+                                : "bg-rose-500"
+                            }`}></span>
+                            {webhookDiagnostics.status === "success" ? "Enlace Exitoso" : webhookDiagnostics.status === "ignored" ? "Ignorado de forma segura" : "Error en Payload"}
+                          </span>
+                        </div>
+
+                        <div className="text-left space-y-2">
+                          <p className="text-slate-300 font-bold text-sm italic">
+                            {webhookDiagnostics.details}
+                          </p>
+                          <div className="flex gap-4 text-[10px] text-slate-500 font-mono">
+                            <span>Recibido: {new Date(webhookDiagnostics.lastReceivedAt).toLocaleString('es-MX')}</span>
+                          </div>
+                        </div>
+
+                        {/* Acordeón para ver la carga cruda en JSON */}
+                        <div className="space-y-2 text-left">
+                          <details className="group border-t border-slate-900/60 pt-3">
+                            <summary className="list-none flex items-center justify-between text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] cursor-pointer select-none">
+                              <span>Ver Carga Original Recibida (Make)</span>
+                              <span className="transition-transform group-open:rotate-180">
+                                <i className="fas fa-chevron-down"></i>
+                              </span>
+                            </summary>
+                            <pre className="mt-3 p-4 rounded-xl bg-slate-950 font-mono text-[9px] text-slate-400 overflow-x-auto border border-slate-800 max-h-40">
+                              {JSON.stringify(webhookDiagnostics.rawPayload, null, 2)}
+                            </pre>
+                          </details>
+
+                          {webhookDiagnostics.normalizedPayload && (
+                            <details className="group pt-1">
+                              <summary className="list-none flex items-center justify-between text-[10px] font-black text-purple-500/80 uppercase tracking-[0.2em] cursor-pointer select-none">
+                                <span>Ver Formateo Traducido por el Adaptador</span>
+                                <span className="transition-transform group-open:rotate-180">
+                                  <i className="fas fa-chevron-down"></i>
+                                </span >
+                              </summary>
+                              <pre className="mt-3 p-4 rounded-xl bg-purple-950/20 font-mono text-[9px] text-purple-300 overflow-x-auto border border-purple-500/10 max-h-40">
+                                {JSON.stringify(webhookDiagnostics.normalizedPayload, null, 2)}
+                              </pre>
+                            </details>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="p-8 rounded-2xl bg-amber-500/[0.02] border border-amber-500/10 flex flex-col items-center justify-center text-center gap-3 py-10">
+                        <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
+                          <i className="fas fa-satellite-dish animate-bounce"></i>
+                        </div>
+                        <div className="space-y-1">
+                          <h5 className="font-bold text-slate-300 text-sm">Esperando transmisión de Make.com...</h5>
+                          <p className="text-slate-500 text-xs italic leading-relaxed max-w-sm font-sans mx-auto">
+                            Tu búnker está listo y escuchando en el puerto. Ve a tu escenario de Make.com y ejecuta una prueba ("Run once") para que aparezca el diagnóstico de integración en este panel.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
 
               <div className="bg-slate-900 border border-slate-800 rounded-[4rem] overflow-hidden shadow-2xl">
                  <div className="overflow-x-auto">
