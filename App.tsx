@@ -24,6 +24,7 @@ import { MarkovHeatmap } from './components/MarkovHeatmap';
 import { calculateMarkovTransitions, calculateMalwareInfectionScores } from './utils/dataHelper';
 import { ShannonAudit } from './components/ShannonAudit';
 import { OfflineExportCenter } from './components/OfflineExportCenter';
+import { WeightTrendChart } from './components/WeightTrendChart';
 import { collection, doc, onSnapshot, query, orderBy, limit } from "firebase/firestore";
 import { db, handleFirestoreError, OperationType, testConnection } from "./services/firebase";
 
@@ -1747,6 +1748,8 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                   </button>
                 </div>
              </div>
+
+             <WeightTrendChart />
 
              <ResonanceScanChart />
 

@@ -212,7 +212,96 @@ export const OfflineExportCenter: React.FC<OfflineExportCenterProps> = ({
   };
 
   const handlePrint = () => {
-    window.print();
+    try {
+      window.print();
+    } catch (e) {
+      console.warn("Print blocked by container iframe context:", e);
+      alert("El navegador bloqueó la ventana de impresión dentro del iFrame. Usa el botón 'Descargar Reporte (.html/PDF)' o 'Abrir en Ventana Nueva'.");
+    }
+  };
+
+  // Direct standalone printable HTML file download for mobile & laptop compatibility
+  const handleDownloadStandaloneReport = () => {
+    const reportElement = document.getElementById("forensic-report-printable-area");
+    if (!reportElement) {
+      alert("Abre la previsualización del reporte primero.");
+      return;
+    }
+
+    const reportHTML = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporte_Forense_Chispazo_Vector_${Date.now()}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      body { background: white !important; color: black !important; padding: 0 !important; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-100 p-4 md:p-8">
+  <div class="no-print max-w-4xl mx-auto mb-4 bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center">
+    <span class="text-xs font-bold text-amber-400">📄 REPORTE LISTO PARA IMPRIMIR O GUARDAR COMO PDF</span>
+    <button onclick="window.print()" class="bg-emerald-600 px-4 py-2 rounded text-xs font-bold uppercase text-white">Imprimir / Guardar PDF</button>
+  </div>
+  <div className="max-w-4xl mx-auto">
+    ${reportElement.outerHTML}
+  </div>
+  <script>
+    // Auto trigger print when loaded directly if user desires
+  </script>
+</body>
+</html>`;
+
+    const blob = new Blob([reportHTML], { type: 'text/html;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Reporte_Forense_Chispazo_Sorteo_${historicalData[0]?.CONCURSO || 'Actual'}.html`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // Open printable report in a clean independent browser tab (bypasses iframe restrictions)
+  const handleOpenStandaloneTab = () => {
+    const reportElement = document.getElementById("forensic-report-printable-area");
+    const htmlContent = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Reporte Forense Chispazo Quantum</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      body { background: white !important; color: black !important; padding: 0 !important; }
+      .no-print { display: none !important; }
+    }
+  </style>
+</head>
+<body class="bg-slate-200 p-6">
+  <div class="no-print max-w-4xl mx-auto mb-6 bg-slate-900 text-white p-4 rounded-2xl flex justify-between items-center shadow-xl">
+    <div class="flex items-center gap-2">
+      <span class="w-3 h-3 bg-emerald-500 rounded-full animate-pulse"></span>
+      <span class="text-xs font-black uppercase text-slate-200">Vista de Impresión Independiente (Sin iFrame)</span>
+    </div>
+    <button onclick="window.print()" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-6 py-2.5 rounded-xl font-black text-xs uppercase tracking-wider">
+      <i class="fas fa-print"></i> Imprimir / Guardar como PDF
+    </button>
+  </div>
+  <div class="max-w-4xl mx-auto">
+    ${reportElement ? reportElement.outerHTML : 'Cargando contenido...'}
+  </div>
+</body>
+</html>`;
+
+    const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8;' });
+    const blobUrl = URL.createObjectURL(blob);
+    window.open(blobUrl, '_blank');
   };
 
   return (
@@ -292,33 +381,49 @@ export const OfflineExportCenter: React.FC<OfflineExportCenterProps> = ({
       {isPreviewOpen && (
         <div className="fixed inset-0 bg-black/95 z-50 overflow-y-auto p-4 md:p-12 flex flex-col items-center">
           {/* Action header inside visual preview */}
-          <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 p-6 rounded-t-[3rem] sticky top-0 z-50 flex justify-between items-center no-print">
+          <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 p-6 rounded-t-[3rem] sticky top-0 z-50 flex flex-col md:flex-row justify-between items-center gap-4 no-print">
             <div className="flex items-center gap-3">
               <span className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                 PREVISUALIZACIÓN DE REPORTE FORENSE DE ALTA FIDELIDAD
               </span>
             </div>
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-2">
+              <button 
+                onClick={handleDownloadStandaloneReport}
+                className="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-5 py-3 rounded-2xl text-[10px] uppercase tracking-widest shadow-lg shadow-amber-500/20 flex items-center gap-2 transition-all"
+                title="Descargar archivo .html imprimible directamente al celular o lap"
+              >
+                <i className="fas fa-file-download text-sm"></i>
+                Descargar Reporte (.html/PDF)
+              </button>
+              <button 
+                onClick={handleOpenStandaloneTab}
+                className="bg-cyan-600 hover:bg-cyan-500 text-white font-black px-5 py-3 rounded-2xl text-[10px] uppercase tracking-widest shadow-lg shadow-cyan-600/20 flex items-center gap-2 transition-all"
+                title="Abrir en nueva pestaña independiente para guardar como PDF sin bloqueos de iframe"
+              >
+                <i className="fas fa-external-link-alt text-sm"></i>
+                Abrir en Pestaña Nueva
+              </button>
               <button 
                 onClick={handlePrint}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-8 py-3 rounded-2xl text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-black px-5 py-3 rounded-2xl text-[10px] uppercase tracking-widest shadow-lg shadow-emerald-600/20 flex items-center gap-2 transition-all"
               >
                 <i className="fas fa-print"></i>
-                Imprimir / Guardar como PDF
+                Imprimir / PDF
               </button>
               <button 
                 onClick={() => setIsPreviewOpen(false)}
-                className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-6 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all"
+                className="bg-slate-800 hover:bg-slate-700 text-slate-300 px-5 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all"
               >
-                Cerrar Protocolo
+                Cerrar
               </button>
             </div>
           </div>
 
           {/* REPORT SHEET: Formatted elegantly like an official government metadata paper.
               Its styles ensure a gorgeous white-page print look when printing via window.print() */}
-          <div className="w-full max-w-4xl bg-white text-zinc-950 p-12 md:p-16 rounded-b-[3rem] shadow-2xl flex flex-col gap-8 text-left font-sans print:rounded-none print:shadow-none print:p-0">
+          <div id="forensic-report-printable-area" className="w-full max-w-4xl bg-white text-zinc-950 p-12 md:p-16 rounded-b-[3rem] shadow-2xl flex flex-col gap-8 text-left font-sans print:rounded-none print:shadow-none print:p-0">
             
             {/* Header Letterhead */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center border-b-4 border-zinc-950 pb-6 gap-4">

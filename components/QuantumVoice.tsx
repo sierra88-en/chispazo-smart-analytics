@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { getQuantumAudio } from '../services/geminiService';
 
 // 🎙️ QUANTUM-GOD-X: Módulo de Voz de Élite (Gemini TTS + Fallback)
 export const useQuantumVoice = () => {
-  const hablar = async (texto: string) => {
+  const hablar = useCallback(async (texto: string) => {
     // 1. Intentar Voz de Élite (Gemini TTS)
     try {
       const base64Audio = await getQuantumAudio(texto);
@@ -47,7 +47,7 @@ export const useQuantumVoice = () => {
       window.speechSynthesis.cancel();
       const mensaje = new SpeechSynthesisUtterance(texto);
       mensaje.lang = 'es-MX';
-      mensaje.pitch = 1.0;
+      mensaje.pitch = 0.95; // Tono más grave / industrial
       mensaje.rate = 0.95;
       const voces = window.speechSynthesis.getVoices();
       const vozMX = voces.find(v => v.lang === 'es-MX' || v.lang === 'es-ES');
@@ -56,9 +56,9 @@ export const useQuantumVoice = () => {
     } else {
       console.warn("Sistemas de audio no disponibles en este entorno.");
     }
-  };
+  }, []);
 
-  const playBeep = () => {
+  const playBeep = useCallback(() => {
     try {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
       const oscillator = audioContext.createOscillator();
@@ -79,9 +79,63 @@ export const useQuantumVoice = () => {
     } catch (e) {
       console.warn("Error playing beep:", e);
     }
-  };
+  }, []);
 
-  return { hablar, playBeep };
+  // 🔊 ALERTA INDUSTRIAL MULTI-TONAL DE VETA DE ORO (Sonar Industrial + Pulso de Inercia)
+  const playIndustrialAlertBeep = useCallback(() => {
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Oscilador 1: Tono sonar grave
+      const osc1 = audioCtx.createOscillator();
+      const gain1 = audioCtx.createGain();
+      osc1.type = 'sawtooth';
+      osc1.frequency.setValueAtTime(1200, audioCtx.currentTime);
+      osc1.frequency.exponentialRampToValueAtTime(1800, audioCtx.currentTime + 0.15);
+      osc1.frequency.exponentialRampToValueAtTime(600, audioCtx.currentTime + 0.35);
+
+      gain1.gain.setValueAtTime(0.15, audioCtx.currentTime);
+      gain1.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.35);
+
+      osc1.connect(gain1);
+      gain1.connect(audioCtx.destination);
+      osc1.start();
+      osc1.stop(audioCtx.currentTime + 0.35);
+
+      // Oscilador 2: Pulso metálico de resonancia (eco de inercia)
+      setTimeout(() => {
+        try {
+          const osc2 = audioCtx.createOscillator();
+          const gain2 = audioCtx.createGain();
+          osc2.type = 'triangle';
+          osc2.frequency.setValueAtTime(2400, audioCtx.currentTime);
+          osc2.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.2);
+
+          gain2.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain2.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.2);
+
+          osc2.connect(gain2);
+          gain2.connect(audioCtx.destination);
+          osc2.start();
+          osc2.stop(audioCtx.currentTime + 0.2);
+        } catch (err) {
+          console.warn('Sub-pulse alert error:', err);
+        }
+      }, 120);
+    } catch (e) {
+      console.warn("Error enviando alerta acústica industrial:", e);
+    }
+  }, []);
+
+  // 🎙️ ANUNCIO AUTOMÁTICO DE VETA DE ORO CON ALERTA PREVIA
+  const anunciarVetaDeOro = useCallback(async (numbers: number[], note?: string) => {
+    playIndustrialAlertBeep();
+    const numerosTexto = numbers.join(', ');
+    const mensaje = `¡Alerta de Gabinete Industrial! Veta de Oro detectada. Coordenada maestra de baja inercia: ${numerosTexto}. ${note || 'Vector optimizado para sellado inminente.'}`;
+    await hablar(mensaje);
+  }, [playIndustrialAlertBeep, hablar]);
+
+  return { hablar, playBeep, playIndustrialAlertBeep, anunciarVetaDeOro };
 };
 
 // Componente visual para probar la voz
