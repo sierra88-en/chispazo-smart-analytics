@@ -74,6 +74,20 @@ if (typeof window !== 'undefined') {
 
 // Historial real actualizado: Sorteo 12015 (19/05/2026) - Protocolo de Verdad Única
 const REAL_HISTORY_RAW: DrawResult[] = [
+  { CONCURSO: 12183, FECHA: '11/08/2026', R1: 3, R2: 10, R3: 22, R4: 26, R5: 27, ordenSalida: [3, 10, 22, 26, 27] },
+  { CONCURSO: 12182, FECHA: '10/08/2026', R1: 5, R2: 9, R3: 14, R4: 16, R5: 22, ordenSalida: [5, 9, 14, 16, 22] },
+  { CONCURSO: 12181, FECHA: '10/08/2026', R1: 2, R2: 11, R3: 13, R4: 24, R5: 27, ordenSalida: [2, 11, 13, 24, 27] },
+  { CONCURSO: 12180, FECHA: '09/08/2026', R1: 1, R2: 15, R3: 19, R4: 22, R5: 28, ordenSalida: [1, 15, 19, 22, 28] },
+  { CONCURSO: 12179, FECHA: '09/08/2026', R1: 2, R2: 15, R3: 20, R4: 23, R5: 28, ordenSalida: [2, 15, 20, 23, 28] },
+  { CONCURSO: 12178, FECHA: '08/08/2026', R1: 11, R2: 12, R3: 15, R4: 16, R5: 25, ordenSalida: [11, 12, 15, 16, 25] },
+  { CONCURSO: 12177, FECHA: '08/08/2026', R1: 4, R2: 16, R3: 20, R4: 22, R5: 26, ordenSalida: [4, 16, 20, 22, 26] },
+  { CONCURSO: 12176, FECHA: '07/08/2026', R1: 3, R2: 4, R3: 5, R4: 19, R5: 27, ordenSalida: [3, 4, 5, 19, 27] },
+  { CONCURSO: 12175, FECHA: '07/08/2026', R1: 5, R2: 10, R3: 17, R4: 18, R5: 21, ordenSalida: [18, 5, 21, 17, 10] },
+  { CONCURSO: 12174, FECHA: '06/08/2026', R1: 1, R2: 11, R3: 18, R4: 20, R5: 23, ordenSalida: [1, 11, 18, 20, 23] },
+  { CONCURSO: 12173, FECHA: '06/08/2026', R1: 3, R2: 7, R3: 19, R4: 20, R5: 24, ordenSalida: [20, 24, 19, 7, 3] },
+  { CONCURSO: 12172, FECHA: '05/08/2026', R1: 9, R2: 18, R3: 20, R4: 24, R5: 27, ordenSalida: [18, 27, 24, 20, 9] },
+  { CONCURSO: 12171, FECHA: '05/08/2026', R1: 4, R2: 5, R3: 7, R4: 15, R5: 18, ordenSalida: [7, 4, 5, 18, 15] },
+  { CONCURSO: 12170, FECHA: '04/08/2026', R1: 3, R2: 11, R3: 17, R4: 22, R5: 25, ordenSalida: [3, 11, 17, 22, 25] },
   { CONCURSO: 12169, FECHA: '04/08/2026', R1: 6, R2: 14, R3: 17, R4: 22, R5: 27, ordenSalida: [17, 27, 14, 6, 22] },
   { CONCURSO: 12168, FECHA: '03/08/2026', R1: 2, R2: 10, R3: 15, R4: 18, R5: 21, ordenSalida: [2, 10, 15, 18, 21] },
   { CONCURSO: 12167, FECHA: '03/08/2026', R1: 5, R2: 11, R3: 18, R4: 22, R5: 27, ordenSalida: [5, 11, 18, 22, 27] },
