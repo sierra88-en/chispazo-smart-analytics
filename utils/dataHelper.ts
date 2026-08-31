@@ -72,8 +72,41 @@ if (typeof window !== 'undefined') {
   fetchLiveCDMXTelemetry().catch(() => {});
 }
 
-// Historial real actualizado: Sorteo 12015 (19/05/2026) - Protocolo de Verdad Única
+// Historial real actualizado: Sorteo 12220 (29/08/2026 Clásico) - Protocolo de Verdad Única
 const REAL_HISTORY_RAW: DrawResult[] = [
+  { CONCURSO: 12220, FECHA: '29/08/2026', R1: 3, R2: 5, R3: 10, R4: 19, R5: 22, ordenSalida: [5, 22, 19, 3, 10] },
+  { CONCURSO: 12219, FECHA: '29/08/2026', R1: 7, R2: 10, R3: 14, R4: 21, R5: 28, ordenSalida: [7, 21, 14, 28, 10] },
+  { CONCURSO: 12217, FECHA: '28/08/2026', R1: 1, R2: 5, R3: 16, R4: 19, R5: 21, ordenSalida: [1, 5, 16, 19, 21] },
+  { CONCURSO: 12216, FECHA: '27/08/2026', R1: 10, R2: 14, R3: 20, R4: 23, R5: 24, ordenSalida: [10, 14, 20, 23, 24] },
+  { CONCURSO: 12215, FECHA: '27/08/2026', R1: 2, R2: 10, R3: 17, R4: 19, R5: 22, ordenSalida: [2, 10, 17, 19, 22] },
+  { CONCURSO: 12214, FECHA: '26/08/2026', R1: 1, R2: 3, R3: 5, R4: 18, R5: 20, ordenSalida: [1, 3, 5, 18, 20] },
+  { CONCURSO: 12213, FECHA: '26/08/2026', R1: 7, R2: 8, R3: 18, R4: 25, R5: 26, ordenSalida: [7, 8, 18, 25, 26] },
+  { CONCURSO: 12212, FECHA: '25/08/2026', R1: 3, R2: 20, R3: 24, R4: 26, R5: 27, ordenSalida: [3, 20, 24, 26, 27] },
+  { CONCURSO: 12211, FECHA: '25/08/2026', R1: 3, R2: 4, R3: 7, R4: 8, R5: 23, ordenSalida: [3, 4, 7, 8, 23] },
+  { CONCURSO: 12210, FECHA: '24/08/2026', R1: 2, R2: 3, R3: 7, R4: 12, R5: 14, ordenSalida: [2, 14, 7, 3, 12] },
+  { CONCURSO: 12209, FECHA: '24/08/2026', R1: 9, R2: 12, R3: 15, R4: 17, R5: 25, ordenSalida: [25, 17, 9, 15, 12] },
+  { CONCURSO: 12208, FECHA: '23/08/2026', R1: 1, R2: 8, R3: 11, R4: 20, R5: 22, ordenSalida: [22, 20, 11, 8, 1] },
+  { CONCURSO: 12207, FECHA: '23/08/2026', R1: 3, R2: 5, R3: 10, R4: 18, R5: 24, ordenSalida: [5, 18, 3, 24, 10] },
+  { CONCURSO: 12206, FECHA: '22/08/2026', R1: 2, R2: 13, R3: 16, R4: 20, R5: 28, ordenSalida: [28, 13, 20, 2, 16] },
+  { CONCURSO: 12205, FECHA: '22/08/2026', R1: 5, R2: 7, R3: 12, R4: 15, R5: 21, ordenSalida: [15, 7, 5, 12, 21] },
+  { CONCURSO: 12204, FECHA: '21/08/2026', R1: 5, R2: 7, R3: 9, R4: 15, R5: 23, ordenSalida: [5, 7, 9, 15, 23] },
+  { CONCURSO: 12203, FECHA: '21/08/2026', R1: 2, R2: 5, R3: 17, R4: 23, R5: 25, ordenSalida: [25, 17, 5, 23, 2] },
+  { CONCURSO: 12202, FECHA: '20/08/2026', R1: 1, R2: 7, R3: 12, R4: 15, R5: 21, ordenSalida: [7, 15, 12, 21, 1] },
+  { CONCURSO: 12201, FECHA: '20/08/2026', R1: 5, R2: 14, R3: 15, R4: 17, R5: 25, ordenSalida: [25, 5, 14, 17, 15] },
+  { CONCURSO: 12200, FECHA: '19/08/2026', R1: 6, R2: 9, R3: 11, R4: 18, R5: 20, ordenSalida: [6, 9, 11, 18, 20] },
+  { CONCURSO: 12199, FECHA: '19/08/2026', R1: 1, R2: 6, R3: 7, R4: 15, R5: 22, ordenSalida: [1, 6, 7, 15, 22] },
+  { CONCURSO: 12198, FECHA: '18/08/2026', R1: 12, R2: 16, R3: 17, R4: 23, R5: 24, ordenSalida: [12, 16, 17, 23, 24] },
+  { CONCURSO: 12197, FECHA: '18/08/2026', R1: 7, R2: 22, R3: 23, R4: 24, R5: 28, ordenSalida: [7, 22, 23, 24, 28] },
+  { CONCURSO: 12196, FECHA: '17/08/2026', R1: 3, R2: 8, R3: 19, R4: 22, R5: 24, ordenSalida: [3, 8, 19, 22, 24] },
+  { CONCURSO: 12195, FECHA: '17/08/2026', R1: 5, R2: 8, R3: 22, R4: 26, R5: 27, ordenSalida: [5, 8, 22, 26, 27] },
+  { CONCURSO: 12194, FECHA: '16/08/2026', R1: 1, R2: 3, R3: 5, R4: 8, R5: 13, ordenSalida: [1, 3, 5, 8, 13] },
+  { CONCURSO: 12193, FECHA: '16/08/2026', R1: 13, R2: 15, R3: 16, R4: 20, R5: 25, ordenSalida: [13, 15, 16, 20, 25] },
+  { CONCURSO: 12192, FECHA: '15/08/2026', R1: 13, R2: 16, R3: 17, R4: 19, R5: 22, ordenSalida: [13, 16, 17, 19, 22] },
+  { CONCURSO: 12191, FECHA: '15/08/2026', R1: 2, R2: 15, R3: 19, R4: 22, R5: 23, ordenSalida: [2, 15, 19, 22, 23] },
+  { CONCURSO: 12190, FECHA: '14/08/2026', R1: 13, R2: 15, R3: 16, R4: 17, R5: 26, ordenSalida: [13, 15, 16, 17, 26] },
+  { CONCURSO: 12189, FECHA: '14/08/2026', R1: 7, R2: 11, R3: 13, R4: 14, R5: 15, ordenSalida: [7, 11, 13, 14, 15] },
+  { CONCURSO: 12188, FECHA: '13/08/2026', R1: 3, R2: 9, R3: 16, R4: 19, R5: 20, ordenSalida: [3, 9, 16, 19, 20] },
+  { CONCURSO: 12187, FECHA: '13/08/2026', R1: 13, R2: 14, R3: 15, R4: 23, R5: 25, ordenSalida: [13, 14, 15, 23, 25] },
   { CONCURSO: 12183, FECHA: '11/08/2026', R1: 3, R2: 10, R3: 22, R4: 26, R5: 27, ordenSalida: [3, 10, 22, 26, 27] },
   { CONCURSO: 12182, FECHA: '10/08/2026', R1: 5, R2: 9, R3: 14, R4: 16, R5: 22, ordenSalida: [5, 9, 14, 16, 22] },
   { CONCURSO: 12181, FECHA: '10/08/2026', R1: 2, R2: 11, R3: 13, R4: 24, R5: 27, ordenSalida: [2, 11, 13, 24, 27] },
@@ -988,6 +1021,156 @@ export const generateQuantum5 = (data: DrawResult[]): { numbers: number[], expla
     numbers: candidate, 
     explanation: `Análisis de resonancia completado. Se detectó alta inercia térmica en el nodo ${candidate[0]} y una recurrencia crítica en el bloque ${candidate[2]}-${candidate[4]} durante los últimos 7 días.`
   };
+};
+
+/**
+ * IMPLEMENTACIÓN DE CADENAS DE MARKOV DE 2º ORDEN CON DECAIMIENTO TEMPORAL
+ * Evalúa P(X_t = c | X_{t-1} = b, X_{t-2} = a)
+ */
+export const calculateSecondOrderMarkov = (data: DrawResult[], decayLambda: number = 0.005) => {
+  const N = data.length;
+  // data está ordenado de más reciente (0) a más antiguo (N-1)
+  const pairCounts: Record<string, number> = {};
+  const trioCounts: Record<string, number> = {};
+
+  for (let k = N - 3; k >= 0; k--) {
+    const prev2 = [data[k + 2].R1, data[k + 2].R2, data[k + 2].R3, data[k + 2].R4, data[k + 2].R5].sort((a,b)=>a-b);
+    const prev1 = [data[k + 1].R1, data[k + 1].R2, data[k + 1].R3, data[k + 1].R4, data[k + 1].R5].sort((a,b)=>a-b);
+    const curr  = [data[k].R1, data[k].R2, data[k].R3, data[k].R4, data[k].R5].sort((a,b)=>a-b);
+
+    const recencyWeight = Math.exp(-decayLambda * k);
+
+    // Mapeo por sumas y medianas para reducir dispersión
+    const p2Sum = prev2.reduce((a,b)=>a+b, 0);
+    const p1Sum = prev1.reduce((a,b)=>a+b, 0);
+    const pairKey = `${p2Sum}_${p1Sum}`;
+
+    pairCounts[pairKey] = (pairCounts[pairKey] || 0) + recencyWeight;
+
+    curr.forEach(num => {
+      const trioKey = `${pairKey}->${num}`;
+      trioCounts[trioKey] = (trioCounts[trioKey] || 0) + recencyWeight;
+    });
+  }
+
+  const scores: Record<number, number> = {};
+  for (let n = 1; n <= 28; n++) scores[n] = 0;
+
+  if (data.length >= 2) {
+    const last2Sum = [data[1].R1, data[1].R2, data[1].R3, data[1].R4, data[1].R5].reduce((a,b)=>a+b, 0);
+    const last1Sum = [data[0].R1, data[0].R2, data[0].R3, data[0].R4, data[0].R5].reduce((a,b)=>a+b, 0);
+    const currentPairKey = `${last2Sum}_${last1Sum}`;
+    const pairWeight = pairCounts[currentPairKey] || 1.0;
+
+    for (let n = 1; n <= 28; n++) {
+      const trioKey = `${currentPairKey}->${n}`;
+      scores[n] = (trioCounts[trioKey] || 0) / pairWeight;
+    }
+  }
+
+  return scores;
+};
+
+/**
+ * ANÁLISIS DE ESPACIO DE FASES DE TAKENS (TEORÍA DEL CAOS)
+ * Reconstruye el atractor en R^3 y localiza los K momentos históricos idénticos en el espacio de fases
+ */
+export const executeTakensPhaseSpaceAnalysis = (data: DrawResult[], tau: number = 1, m: number = 3, topK: number = 15) => {
+  const sumsSeries = data.map(d => d.R1 + d.R2 + d.R3 + d.R4 + d.R5).reverse(); // antiguo a reciente
+  const N = sumsSeries.length;
+  
+  if (N < m * tau) {
+    const fallbackScores: Record<number, number> = {};
+    for (let i = 1; i <= 28; i++) fallbackScores[i] = 1 / 28;
+    return fallbackScores;
+  }
+
+  const vectors: number[][] = [];
+  const drawIndices: number[] = [];
+
+  for (let i = (m - 1) * tau; i < N; i++) {
+    const vec = [sumsSeries[i], sumsSeries[i - tau], sumsSeries[i - 2 * tau]];
+    vectors.push(vec);
+    drawIndices.push(i);
+  }
+
+  const lastState = vectors[vectors.length - 1];
+  const distances: { index: number; dist: number }[] = [];
+
+  for (let idx = 0; idx < vectors.length - 1; idx++) {
+    const vec = vectors[idx];
+    const dist = Math.sqrt(
+      Math.pow(vec[0] - lastState[0], 2) +
+      Math.pow(vec[1] - lastState[1], 2) +
+      Math.pow(vec[2] - lastState[2], 2)
+    );
+    distances.push({ index: drawIndices[idx], dist });
+  }
+
+  distances.sort((a, b) => a.dist - b.dist);
+  const topKNeighbors = distances.slice(0, topK);
+
+  const nodeHits: Record<number, number> = {};
+  for (let n = 1; n <= 28; n++) nodeHits[n] = 0;
+
+  topKNeighbors.forEach(neighbor => {
+    // Sorteo posterior al vecino en el arreglo ordenado cronológicamente
+    const chronologicalIdx = neighbor.index + 1;
+    if (chronologicalIdx < N) {
+      const targetDrawFromEnd = N - 1 - chronologicalIdx;
+      if (data[targetDrawFromEnd]) {
+        const d = data[targetDrawFromEnd];
+        [d.R1, d.R2, d.R3, d.R4, d.R5].forEach(n => {
+          nodeHits[n] += (1 / (1 + neighbor.dist));
+        });
+      }
+    }
+  });
+
+  return nodeHits;
+};
+
+/**
+ * ESPECTRO DE FRECUENCIA FFT Y FILTRADO DE RUIDO ESTOCÁSTICO
+ * Aísla las armónicas de resonancia para cada número n
+ */
+export const calculateFourierHarmonicProjections = (data: DrawResult[], thresholdRatio: number = 1.2) => {
+  const N = Math.min(256, data.length); // Ventana máxima para procesamiento de señal rápida
+  const recentData = data.slice(0, N).reverse(); // Antiguo a reciente
+
+  const projections: Record<number, number> = {};
+
+  for (let num = 1; num <= 28; num++) {
+    // Crear señal binaria en el tiempo
+    const signal = recentData.map(d => [d.R1, d.R2, d.R3, d.R4, d.R5].includes(num) ? 1 : 0);
+    const numPoints = signal.length;
+
+    // Transformada discreta de Fourier simple (DFT)
+    let realSum = 0;
+    let imagSum = 0;
+    const freqIndex = 1; // Frecuencia fundamental ajustada
+
+    for (let t = 0; t < numPoints; t++) {
+      const angle = (2 * Math.PI * freqIndex * t) / numPoints;
+      realSum += signal[t] * Math.cos(angle);
+      imagSum -= signal[t] * Math.sin(angle);
+    }
+
+    const magnitude = Math.sqrt(realSum * realSum + imagSum * imagSum) / numPoints;
+    const phase = Math.atan2(imagSum, realSum);
+
+    // Proyección extrapolada para el paso t = N + 1
+    const nextAngle = (2 * Math.PI * freqIndex * numPoints) / numPoints;
+    const harmonicSignal = magnitude * Math.cos(nextAngle + phase);
+
+    // Presión atmosférica CDMX y Bola 26 como moduladores de amortiguamiento
+    const pressureDamping = activeCDMXTelemetry.pressureAtm / 0.77; // 0.7669 / 0.77
+    const ball26Friction = (num === 26) ? 0.88 : 1.0; // Factor de fricción mecánico de la Bola 26
+
+    projections[num] = Math.max(0, (magnitude + harmonicSignal) * pressureDamping * ball26Friction);
+  }
+
+  return projections;
 };
 
 /**
@@ -1957,16 +2140,19 @@ export const generateSocioHolyGrailCombination = (data: DrawResult[]): HolyGrail
   // 1. Cargar sub-análisis del sistema
   const thermalScores = calculateThermalInertia(data);
   const markovMatrix = calculateMarkovTransitions(data);
+  const secondOrderMarkovScores = calculateSecondOrderMarkov(data, 0.005);
+  const takensScores = executeTakensPhaseSpaceAnalysis(data, 1, 3, 15);
+  const fourierScores = calculateFourierHarmonicProjections(data, 1.2);
   const { currentRegime, stabilityScore } = executeMaletinSignatureScanner(data);
   
   const lastDraw = [data[0].R1, data[0].R2, data[0].R3, data[0].R4, data[0].R5];
   
-  // 2. Monte Carlo masivo: Generamos 150 candidatos del Chispazo
+  // 2. Monte Carlo masivo: Generamos 250 candidatos del Chispazo
   let bestCandidate: number[] = [];
   let bestScore = -Infinity;
   let bestMetrics: any = {};
 
-  for (let i = 0; i < 150; i++) {
+  for (let i = 0; i < 250; i++) {
     // Generar candidata ordenada de 5 números únicos
     const candidate: number[] = [];
     while (candidate.length < 5) {
@@ -1976,7 +2162,6 @@ export const generateSocioHolyGrailCombination = (data: DrawResult[]): HolyGrail
     candidate.sort((a, b) => a - b);
 
     // a) Ley de Shannon (Entropía de Espaciamientos de Shannon)
-    // Buscamos que los espaciamientos sean balanceados (ni agrupados tipo 1,2,3,4,5 ni espaciados perfectos fijos)
     const diffs = [
       candidate[0], 
       candidate[1] - candidate[0], 
@@ -1988,7 +2173,6 @@ export const generateSocioHolyGrailCombination = (data: DrawResult[]): HolyGrail
     const sumDiffs = diffs.reduce((a, b) => a + b, 0);
     const probs = diffs.map(d => d / sumDiffs);
     const entropy = -probs.reduce((sum, p) => p > 0 ? sum + p * Math.log2(p) : sum, 0);
-    // Ideal Shannon entropy for 5-ticket draws is around 2.1 - 2.5. We reward proximity to 2.3
     const shannonDelta = Math.abs(entropy - 2.3);
     const shannonScore = Math.max(0, 100 - (shannonDelta * 200));
 
@@ -1996,11 +2180,10 @@ export const generateSocioHolyGrailCombination = (data: DrawResult[]): HolyGrail
     const avgCandidateMass = candidate.reduce((acc, num) => acc + (BALL_WEIGHTS[num] || 4.42), 0) / 5;
     let massRegimeScore = 50;
     if (currentRegime === 'LIGERO' && avgCandidateMass < 4.42) {
-      massRegimeScore = 100 - (avgCandidateMass - 4.30) * 200; // Premia los más ligeros
+      massRegimeScore = 100 - (avgCandidateMass - 4.30) * 200;
     } else if (currentRegime === 'PESADO' && avgCandidateMass > 4.42) {
-      massRegimeScore = 100 - (4.54 - avgCandidateMass) * 200; // Premia los más pesados
+      massRegimeScore = 100 - (4.54 - avgCandidateMass) * 200;
     } else if (currentRegime === 'HÍBRIDO') {
-      // Premia equilibrio alrededor de 4.42g
       massRegimeScore = 100 - Math.abs(avgCandidateMass - 4.42) * 500;
     }
 
@@ -2008,47 +2191,54 @@ export const generateSocioHolyGrailCombination = (data: DrawResult[]): HolyGrail
     const candidateThermalSum = candidate.reduce((acc, num) => acc + (thermalScores[num] || 1.0), 0) / 5;
     const thermalScore = Math.min(100, Math.max(0, candidateThermalSum * 80));
 
-    // d) Cadena de Markov (Transiciones de último sorteo)
+    // d) Cadena de Markov (1er y 2do Orden con Decaimiento)
     let markovTransitionSum = 0;
     lastDraw.forEach(prevNum => {
       candidate.forEach(candNum => {
         markovTransitionSum += markovMatrix[prevNum]?.[candNum] || 0.02;
       });
     });
-    const markovScore = Math.min(100, markovTransitionSum * 450);
+    const markov2ndSum = candidate.reduce((acc, n) => acc + (secondOrderMarkovScores[n] || 0.01), 0) / 5;
+    const markovScore = Math.min(100, (markovTransitionSum * 250) + (markov2ndSum * 350));
 
-    // e) Antifragilidad (Convexidad de Taleb H)
+    // e) Espacio de Fases de Takens (Caos / Reconstrucción de Atractor)
+    const takensSum = candidate.reduce((acc, n) => acc + (takensScores[n] || 0.05), 0) / 5;
+    const takensScore = Math.min(100, takensSum * 200);
+
+    // f) Espectro Armónico Fourier (FFT)
+    const fourierSum = candidate.reduce((acc, n) => acc + (fourierScores[n] || 0.05), 0) / 5;
+    const fourierScore = Math.min(100, fourierSum * 180);
+
+    // g) Antifragilidad (Convexidad de Taleb H)
     const { score: H } = calculateAntifragility(candidate, data);
     const antifragilityScore = Math.min(100, Math.max(0, (H + 0.5) * 100));
 
-    // f) Causalidad (Reactor Pearl y vacío de succión)
+    // h) Causalidad
     const causalSum = candidate.reduce((acc, num) => acc + calculateCausalProbability(num, 28.4), 0) / 5;
     const causalScore = Math.min(100, causalSum * 250);
 
-    // g) Sesgo Humano Mínimo (Garantía de No Prorrateo)
-    // Evitamos patrones psicológicos comunes, como números de fechas (1-12, 1-31) amontonados
+    // i) Sesgo Humano Mínimo
     const datesLimitCount = candidate.filter(n => n <= 12).length;
     let biasPenalty = 0;
-    if (datesLimitCount >= 4) biasPenalty = 45; // Demasiados números de mes
-    
-    // Distancia entre bolas adyacentes
+    if (datesLimitCount >= 4) biasPenalty = 45;
     let clusterCount = 0;
     for (let c = 0; c < 4; c++) {
       if (candidate[c+1] - candidate[c] === 1) clusterCount++;
     }
-    if (clusterCount >= 2) biasPenalty += 35; // Tres números seguidos es un patrón de boleto común
-    
+    if (clusterCount >= 2) biasPenalty += 35;
     const humanBiasScore = Math.max(10, 100 - biasPenalty);
 
-    // SCORE UNIFICADO OMNIPRESENTE (Cada ley ponderada de forma óptima)
+    // SCORE TRIPLE FUSIÓN RECALIBRADO:
     const unifiedAlignmentScore = 
-      (shannonScore * 0.15) + 
-      (massRegimeScore * 0.15) + 
-      (thermalScore * 0.15) + 
-      (markovScore * 0.15) + 
-      (antifragilityScore * 0.15) + 
-      (causalScore * 0.15) + 
-      (humanBiasScore * 0.10);
+      (shannonScore * 0.10) + 
+      (massRegimeScore * 0.12) + 
+      (thermalScore * 0.10) + 
+      (markovScore * 0.18) + 
+      (takensScore * 0.15) + 
+      (fourierScore * 0.15) + 
+      (antifragilityScore * 0.10) + 
+      (causalScore * 0.05) + 
+      (humanBiasScore * 0.05);
 
     if (unifiedAlignmentScore > bestScore && validateSymmetry(candidate)) {
       bestScore = unifiedAlignmentScore;

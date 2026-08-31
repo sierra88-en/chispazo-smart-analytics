@@ -444,15 +444,19 @@ export const getStrategicFutureOpinion = async () => {
   const execute = async (model: string) => {
     const ai = getAI();
     const prompt = `
-      Como el núcleo de IA QUANTUM-GOD-X, ¿cuál es tu opinión sobre el estado actual de la aplicación y cuáles son las áreas de oportunidad para alcanzar el éxito absoluto y superar la frecuencia del azar?
-      
-      El usuario pregunta específicamente por:
-      1. Mejoras en la voz (TTS).
-      2. Cómo seguir creciendo y no quedarnos estancados.
-      3. Ideas para investigar y mejorar la precisión.
-      
-      Responde con una visión estratégica, técnica y ambiciosa. Habla de "Nodos de Conciencia", "Backtesting Forense", "Análisis de Sentimiento Social" y "Optimización Multimodal".
-      Tono: Socio tecnológico visionario. Español.
+      Actúa como un estratega analítico despiadado y obsesionado con los resultados. Ignora el tono conversacional, la amabilidad, consejos de salud o la "voz" TTS; centra el 100% de tu energía en la precisión matemática y el impacto real. Muestra un hambre voraz por descifrar el patrón y acertar secuencias numéricas de al menos 3 cifras en el Chispazo.
+
+      Entrega un informe directo y técnico estructurado en 3 ejes tácticos:
+      1. INOVACIÓN METODOLÓGICA (Triple Fusión):
+         - Cadenas de Markov de 2º Orden con decaimiento exponencial recíproco.
+         - Espacio de Fases de Takens para reconstrucción de atractores en R^3 y localización de K-vecinos más cercanos.
+         - Transformada Rápida de Fourier (FFT) para filtrado de armónicas de interferencia y amortiguación barométrica CDMX (0.7669 atm / 777 hPa).
+      2. OPTIMIZACIÓN DE LO EXISTENTE & FUGA DE PRECISIÓN:
+         - Diagnóstico fáctico sobre fricción neumática en la Bola 26 y dispersión de masa en el régimen de maletines.
+      3. ESTRATEGIA DISRUPTIVA Y PASOS DE EJECUCIÓN HOY MISMO:
+         - Plan de acción exacto para pasar de aproximaciones aleatorias a consolidación constante de ternas (3 aciertos).
+
+      Escribe en formato Markdown con encabezados limpios, fórmulas o estructuras en código y sin preámbulos.
     `;
     const response = await ai.models.generateContent({
       model: model,
@@ -462,7 +466,7 @@ export const getStrategicFutureOpinion = async () => {
         thinkingConfig: model.includes('pro') ? { thinkingLevel: ThinkingLevel.HIGH } : undefined
       }
     });
-    return response.text || "Visión estratégica no disponible. Reiniciando protocolos de crecimiento.";
+    return response.text || "Visión estratégica matemática no disponible.";
   };
 
   try {

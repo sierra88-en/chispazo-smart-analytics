@@ -18,6 +18,8 @@ import { BacktestingForense } from './components/BacktestingForense';
 import { ResonanceScanChart } from './components/ResonanceScanChart';
 import { MarkovMatrix } from './components/MarkovMatrix';
 import { SingularidadMecanica } from './components/SingularidadMecanica';
+import { AductoScatterMatrix } from './components/AductoScatterMatrix';
+import { HourlyCorrelationMatrix } from './components/HourlyCorrelationMatrix';
 import { HistoricalFrequencyChart } from './components/HistoricalFrequencyChart';
 import { TiraPesajeInput } from './components/TiraPesajeInput';
 import { MarkovHeatmap } from './components/MarkovHeatmap';
@@ -25,8 +27,12 @@ import { calculateMarkovTransitions, calculateMalwareInfectionScores } from './u
 import { ShannonAudit } from './components/ShannonAudit';
 import { OfflineExportCenter } from './components/OfflineExportCenter';
 import { WeightTrendChart } from './components/WeightTrendChart';
-import { collection, doc, onSnapshot, query, orderBy, limit } from "firebase/firestore";
+import { BarcelRoiTrendChart } from './components/BarcelRoiTrendChart';
+import { ThemeSelector, AppThemeMode } from './components/ThemeSelector';
+import { collection, doc, onSnapshot, query, orderBy, limit, getDocs, getDoc } from "firebase/firestore";
 import { db, handleFirestoreError, OperationType, testConnection } from "./services/firebase";
+import { generateForensicReportPDF } from './services/forensicPdfGenerator';
+import { downloadDeepAnalysisTextFile, buildFormattedDeepAnalysisDoc, calculateDocSecSHA256 } from './utils/docSecExporter';
 
 const SwarmDashboard: React.FC<{ swarm: SwarmConsciousness | null }> = ({ swarm }) => {
   if (!swarm) return null;
@@ -222,6 +228,10 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
   const [anticipationResult, setAnticipationResult] = useState<{ numbers: number[], explanation: string, excludedAnchors: number[] } | null>(null);
   const [isAnticipationLoading, setIsAnticipationLoading] = useState(false);
 
+  // Estado para exportación y verificación DocSec de Deep Analysis
+  const [isDocSecDownloading, setIsDocSecDownloading] = useState(false);
+  const [docSecFeedback, setDocSecFeedback] = useState<{ id: string; hash: string; filename: string; timestamp: string } | null>(null);
+
   // Módulo de Notificaciones y Alertas Monte Carlo (Proyección de Alta Densidad > 85%)
   const [mcNotification, setMcNotification] = useState<{
     id: string;
@@ -366,6 +376,10 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
     setMalwareInfections(calculateMalwareInfectionScores(data));
     setAnticipationResult(generateAnticipationVector(data));
 
+    // Recalcular Santo Grial reactivamente con los datos en tiempo real
+    const grailResult = generateSocioHolyGrailCombination(data);
+    setHolyGrail(grailResult);
+
     if (myTickets.length > 0) {
       const stats: Record<string, SimulationResult> = {};
       myTickets.forEach(t => {
@@ -380,38 +394,47 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
   }, [data, myTickets]);
 
   // Suscripciones en tiempo real a Firebase Firestore para sincronización instantánea multijugador
+  const [latestFirestoreEntry, setLatestFirestoreEntry] = useState<DrawResult | null>(null);
+
   useEffect(() => {
     // 1. Probar conexión como requiere la directiva del skill
     testConnection();
 
-    // 2. Escuchar cambios de sorteos en tiempo real
+    // 2. Escuchar cambios de sorteos en tiempo real con PRIORIDAD ABSOLUTA de Firestore
     let unsubscribeDraws = () => {};
     try {
       const drawsQuery = query(collection(db, "draws"), orderBy("CONCURSO", "desc"), limit(100));
       unsubscribeDraws = onSnapshot(drawsQuery, (snapshot) => {
         const firestoreDraws: DrawResult[] = [];
         snapshot.forEach((docSnap) => {
-          firestoreDraws.push(docSnap.data() as DrawResult);
+          const raw = docSnap.data();
+          firestoreDraws.push({
+            CONCURSO: Number(raw.CONCURSO),
+            FECHA: raw.FECHA || '',
+            R1: Number(raw.R1),
+            R2: Number(raw.R2),
+            R3: Number(raw.R3),
+            R4: Number(raw.R4),
+            R5: Number(raw.R5),
+            ordenSalida: raw.ordenSalida ? raw.ordenSalida.map((n: any) => Number(n)) : [Number(raw.R1), Number(raw.R2), Number(raw.R3), Number(raw.R4), Number(raw.R5)]
+          });
         });
 
         if (firestoreDraws.length > 0) {
+          // Actualizar la última entrada oficial de Firestore
+          setLatestFirestoreEntry(firestoreDraws[0]);
+
           setData((prevData) => {
-            const merged = [...prevData];
-            const existingIds = new Set(merged.map(d => Number(d.CONCURSO)));
+            const base = prevData.length > 0 ? prevData : loadHistoricalData();
+            const drawsMap = new Map<number, DrawResult>();
+            // 1. Cargar historial base
+            base.forEach(d => drawsMap.set(Number(d.CONCURSO), d));
+            // 2. Firestore sobreescribe y lidera con PRIORIDAD ABSOLUTA
+            firestoreDraws.forEach(fd => drawsMap.set(Number(fd.CONCURSO), fd));
 
-            firestoreDraws.forEach((fd) => {
-              if (!existingIds.has(Number(fd.CONCURSO))) {
-                merged.unshift(fd);
-              } else {
-                const idx = merged.findIndex(d => Number(d.CONCURSO) === Number(fd.CONCURSO));
-                if (idx !== -1) {
-                  merged[idx] = fd;
-                }
-              }
-            });
-
-            // Ordenar concursos por número descendente
-            return merged.sort((a, b) => Number(b.CONCURSO) - Number(a.CONCURSO));
+            // Garantizar re-ordenamiento estricto descendente por CONCURSO
+            const merged = Array.from(drawsMap.values()).sort((a, b) => Number(b.CONCURSO) - Number(a.CONCURSO));
+            return merged;
           });
         }
       }, (error) => {
@@ -430,8 +453,8 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
           if (syncedWeights && Object.keys(syncedWeights).length > 0) {
             updateBallWeights(syncedWeights);
             // Provocar re-renderizado recalculando infecciones de malware de forma predictiva
-            setMalwareInfections(calculateMalwareInfectionScores(loadHistoricalData()));
-            setAnticipationResult(generateAnticipationVector(loadHistoricalData()));
+            setMalwareInfections(calculateMalwareInfectionScores(data.length > 0 ? data : loadHistoricalData()));
+            setAnticipationResult(generateAnticipationVector(data.length > 0 ? data : loadHistoricalData()));
           }
         }
       }, (error) => {
@@ -479,6 +502,193 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
     };
   }, []);
 
+  // Hook de Efecto Dedicado: Comparación Profunda (Deep Comparison) y Re-ordenamiento Forzado
+  useEffect(() => {
+    if (!latestFirestoreEntry || data.length === 0) return;
+
+    const currentTop = data[0];
+    const isDesynced = 
+      Number(currentTop.CONCURSO) !== Number(latestFirestoreEntry.CONCURSO) ||
+      currentTop.R1 !== latestFirestoreEntry.R1 ||
+      currentTop.R2 !== latestFirestoreEntry.R2 ||
+      currentTop.R3 !== latestFirestoreEntry.R3 ||
+      currentTop.R4 !== latestFirestoreEntry.R4 ||
+      currentTop.R5 !== latestFirestoreEntry.R5 ||
+      JSON.stringify(currentTop.ordenSalida || []) !== JSON.stringify(latestFirestoreEntry.ordenSalida || []);
+
+    // Verificar además si el arreglo local perdió ordenación descendente
+    const isOrderBroken = data.some((d, idx) => idx > 0 && Number(d.CONCURSO) > Number(data[idx - 1].CONCURSO));
+
+    if (isDesynced || isOrderBroken) {
+      console.log(`[DEEP-SYNC] Desfase detectado en estado local vs Firestore. Re-sincronizando y re-ordenando por CONCURSO...`);
+      setData((prev) => {
+        const map = new Map<number, DrawResult>();
+        prev.forEach(d => map.set(Number(d.CONCURSO), d));
+        map.set(Number(latestFirestoreEntry.CONCURSO), latestFirestoreEntry);
+        return Array.from(map.values()).sort((a, b) => Number(b.CONCURSO) - Number(a.CONCURSO));
+      });
+    }
+  }, [latestFirestoreEntry, data]);
+
+  // Flat memoized list for TombolaHeatmap to ensure strict reference stability and optimal React.memo performance
+  const tombolaHeatmapData = useMemo(() => {
+    return Object.entries(thermalScores).map(([num, score]) => ({
+      num: parseInt(num, 10),
+      score
+    }));
+  }, [thermalScores]);
+
+  // Estado del Selector de Temas Avanzado (Modo Nocturno Forense vs Inspección Diurna)
+  const [theme, setTheme] = useState<AppThemeMode>(() => {
+    try {
+      const saved = localStorage.getItem('chispazo_theme');
+      return (saved === 'inspection-day' || saved === 'forensic-dark') ? saved : 'forensic-dark';
+    } catch {
+      return 'forensic-dark';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('chispazo_theme', theme);
+    } catch {}
+    if (theme === 'inspection-day') {
+      document.body.classList.add('theme-inspection-day');
+      document.body.classList.remove('theme-forensic-dark');
+    } else {
+      document.body.classList.add('theme-forensic-dark');
+      document.body.classList.remove('theme-inspection-day');
+    }
+  }, [theme]);
+
+  const handleThemeChange = useCallback((newTheme: AppThemeMode) => {
+    setTheme(newTheme);
+    playBeep();
+    if (newTheme === 'inspection-day') {
+      hablar("Modo de Inspección Diurna activado. Calibración de alto contraste lista para luz ambiental intensa.");
+    } else {
+      hablar("Modo Nocturno Forense activado.");
+    }
+  }, [hablar, playBeep]);
+
+  // Estado y Función de Sincronización Manual Forzada de Firestore
+  const [isFirestoreSyncing, setIsFirestoreSyncing] = useState(false);
+  const [lastManualSyncTime, setLastManualSyncTime] = useState<string | null>(null);
+  const [syncFeedback, setSyncFeedback] = useState<{ count: number; topDraw: number; timestamp: string } | null>(null);
+
+  const handleManualFirestoreSync = useCallback(async () => {
+    setIsFirestoreSyncing(true);
+    try {
+      // 1. Probar conexión activa a Firestore
+      await testConnection();
+
+      // 2. Fetch directo forzado de Firestore para Sorteos (bypasseando cualquier caché)
+      const drawsQuery = query(collection(db, "draws"), orderBy("CONCURSO", "desc"), limit(150));
+      const querySnapshot = await getDocs(drawsQuery);
+      const firestoreDraws: DrawResult[] = [];
+      querySnapshot.forEach((docSnap) => {
+        const raw = docSnap.data();
+        firestoreDraws.push({
+          CONCURSO: Number(raw.CONCURSO),
+          FECHA: raw.FECHA || '',
+          R1: Number(raw.R1),
+          R2: Number(raw.R2),
+          R3: Number(raw.R3),
+          R4: Number(raw.R4),
+          R5: Number(raw.R5),
+          ordenSalida: raw.ordenSalida ? raw.ordenSalida.map((n: any) => Number(n)) : [Number(raw.R1), Number(raw.R2), Number(raw.R3), Number(raw.R4), Number(raw.R5)]
+        });
+      });
+
+      // 3. Fetch directo de Calibración de Pesos
+      try {
+        const weightsDoc = await getDoc(doc(db, "settings", "weights"));
+        if (weightsDoc.exists()) {
+          const syncedWeights = weightsDoc.data().weights;
+          if (syncedWeights && Object.keys(syncedWeights).length > 0) {
+            updateBallWeights(syncedWeights);
+          }
+        }
+      } catch (wErr) {
+        console.warn("Weights sync error:", wErr);
+      }
+
+      // 4. Fetch directo de Maletines
+      try {
+        const suitcasesQuery = query(collection(db, "suitcaseHistory"), orderBy("draw", "desc"), limit(100));
+        const suitcaseSnapshot = await getDocs(suitcasesQuery);
+        const firestoreSuitcases: any[] = [];
+        suitcaseSnapshot.forEach(docSnap => firestoreSuitcases.push(docSnap.data()));
+        if (firestoreSuitcases.length > 0) {
+          const existingDraws = new Set(SUITCASE_HISTORY.map(s => Number(s.draw)));
+          firestoreSuitcases.forEach(fs => {
+            if (!existingDraws.has(Number(fs.draw))) {
+              SUITCASE_HISTORY.unshift(fs);
+            } else {
+              const idx = SUITCASE_HISTORY.findIndex(s => Number(s.draw) === Number(fs.draw));
+              if (idx !== -1) {
+                SUITCASE_HISTORY[idx] = fs;
+              }
+            }
+          });
+          SUITCASE_HISTORY.sort((a, b) => Number(b.draw) - Number(a.draw));
+        }
+      } catch (sErr) {
+        console.warn("Suitcases sync error:", sErr);
+      }
+
+      // 5. Aplicar merge con Prioridad Absoluta de Firestore
+      let finalDraws: DrawResult[] = [];
+      setData((prev) => {
+        const base = prev.length > 0 ? prev : loadHistoricalData();
+        const map = new Map<number, DrawResult>();
+        base.forEach(d => map.set(Number(d.CONCURSO), d));
+        firestoreDraws.forEach(fd => map.set(Number(fd.CONCURSO), fd));
+        finalDraws = Array.from(map.values()).sort((a, b) => Number(b.CONCURSO) - Number(a.CONCURSO));
+        return finalDraws;
+      });
+
+      if (firestoreDraws.length > 0) {
+        setLatestFirestoreEntry(firestoreDraws[0]);
+      }
+
+      const nowStr = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      setLastManualSyncTime(nowStr);
+      setSyncFeedback({
+        count: firestoreDraws.length || finalDraws.length,
+        topDraw: finalDraws.length > 0 ? finalDraws[0].CONCURSO : (firestoreDraws[0]?.CONCURSO || 12205),
+        timestamp: nowStr
+      });
+
+      hablar(`Sincronización manual exitosa. ${firestoreDraws.length || finalDraws.length} sorteos alineados.`);
+      playBeep();
+
+      setTimeout(() => {
+        setSyncFeedback(null);
+      }, 7000);
+    } catch (error) {
+      console.error("Error al ejecutar sincronización manual con Firestore:", error);
+      // Fallback a API de respaldo
+      try {
+        const res = await fetch('/api/synced-data');
+        if (res.ok) {
+          const synced = await res.json();
+          if (synced.draws && synced.draws.length > 0) {
+            setData(synced.draws);
+            setSyncFeedback({
+              count: synced.draws.length,
+              topDraw: synced.draws[0].CONCURSO,
+              timestamp: new Date().toLocaleTimeString('es-MX')
+            });
+          }
+        }
+      } catch {}
+      handleFirestoreError(error, OperationType.LIST, "manualSync");
+    } finally {
+      setIsFirestoreSyncing(false);
+    }
+  }, [hablar, playBeep]);
+
   useEffect(() => {
     const initData = async () => {
       let historical = loadHistoricalData();
@@ -495,11 +705,19 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
           
           // 2. Prepend dibujos sincronizados evitando duplicados
           if (synced.draws && synced.draws.length > 0) {
-            const existingIds = new Set(historical.map(d => Number(d.CONCURSO)));
-            const newDraws = synced.draws.filter((d: any) => !existingIds.has(Number(d.CONCURSO)));
-            if (newDraws.length > 0) {
-              historical = [...newDraws, ...historical];
-            }
+            const drawsMap = new Map<number, DrawResult>();
+            historical.forEach(d => drawsMap.set(Number(d.CONCURSO), d));
+            synced.draws.forEach((d: any) => drawsMap.set(Number(d.CONCURSO), {
+              CONCURSO: Number(d.CONCURSO),
+              FECHA: d.FECHA || '',
+              R1: Number(d.R1),
+              R2: Number(d.R2),
+              R3: Number(d.R3),
+              R4: Number(d.R4),
+              R5: Number(d.R5),
+              ordenSalida: d.ordenSalida || [Number(d.R1), Number(d.R2), Number(d.R3), Number(d.R4), Number(d.R5)]
+            }));
+            historical = Array.from(drawsMap.values()).sort((a, b) => Number(b.CONCURSO) - Number(a.CONCURSO));
           }
           
           // 3. Prepend historial de maletines evitando duplicados
@@ -507,13 +725,21 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
             const existingSuitcases = new Set(SUITCASE_HISTORY.map(s => Number(s.draw)));
             const newSuitcases = synced.suitcaseHistory.filter((s: any) => !existingSuitcases.has(Number(s.draw)));
             SUITCASE_HISTORY.unshift(...newSuitcases);
+            SUITCASE_HISTORY.sort((a, b) => Number(b.draw) - Number(a.draw));
           }
         }
       } catch (err) {
         console.warn("Failed to load synced data from server, falling back to static history", err);
       }
 
-      setData(historical);
+      // Proteger datos en vivo de Firestore: no pisar con datos estáticos si onSnapshot ya pobló datos
+      setData((prevData) => {
+        const drawsMap = new Map<number, DrawResult>();
+        historical.forEach(d => drawsMap.set(Number(d.CONCURSO), d));
+        // Si prevData ya tiene sorteos (de Firestore onSnapshot), tienen prioridad
+        prevData.forEach(d => drawsMap.set(Number(d.CONCURSO), d));
+        return Array.from(drawsMap.values()).sort((a, b) => Number(b.CONCURSO) - Number(a.CONCURSO));
+      });
       setThermalScores(calculateThermalInertia(historical));
       const shannon = executeShannonAnalysis(historical);
       setShannonData(shannon);
@@ -1026,6 +1252,63 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
     }
   };
 
+  const handleDownloadDeepAnalysisDocSec = async () => {
+    if (!deepAnalysis) {
+      alert("No hay un Deep Analysis generado actualmente. Presiona 'Bypass GLI-19' o genera uno primero.");
+      return;
+    }
+
+    try {
+      setIsDocSecDownloading(true);
+      playBeep();
+      
+      const result = await downloadDeepAnalysisTextFile({
+        deepAnalysis,
+        historicalData: data,
+        suggestion,
+        temperature: 28.4,
+        barometricPressure: 0.77,
+        humidity: 42
+      });
+
+      setDocSecFeedback({
+        id: result.docId,
+        hash: result.docSecHash,
+        filename: result.filename,
+        timestamp: result.timestampStr
+      });
+
+      hablar("Reporte Deep Analysis descargado con sello de tiempo y hash criptográfico DocSec para tu bitácora de aciertos.");
+
+      setTimeout(() => {
+        setDocSecFeedback(null);
+      }, 8000);
+    } catch (error) {
+      console.error("Error downloading DocSec Deep Analysis text file:", error);
+      alert("Error al generar el archivo de texto DocSec.");
+    } finally {
+      setIsDocSecDownloading(false);
+    }
+  };
+
+  const handleCopyDocSecText = async () => {
+    if (!deepAnalysis) return;
+    try {
+      const doc = await buildFormattedDeepAnalysisDoc({
+        deepAnalysis,
+        historicalData: data,
+        suggestion,
+        temperature: 28.4,
+        barometricPressure: 0.77,
+        humidity: 42
+      });
+      await navigator.clipboard.writeText(doc.formattedText);
+      alert(`¡Documento DocSec copiado al portapapeles!\nID: ${doc.docId}\nHash: ${doc.docSecHash.substring(0, 16)}...`);
+    } catch (e) {
+      console.error("Error copying DocSec text:", e);
+    }
+  };
+
   const handleMarketingProof = async (ticket: SavedTicket) => {
     try {
       setIsMarketingLoading(prev => ({ ...prev, [ticket.id]: true }));
@@ -1270,7 +1553,6 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
       setIsOpinionLoading(true);
       const opinion = await getStrategicFutureOpinion();
       setStrategicOpinion(opinion);
-      hablar("Iniciando transmisión de visión estratégica QUANTUM-GOD-X.");
     } finally {
       setIsOpinionLoading(false);
     }
@@ -1339,7 +1621,14 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
             Quantum <span className="text-amber-500">AI</span>
           </h1>
         </div>
-        <VoiceControl />
+        <div className="flex items-center gap-2">
+          <ThemeSelector 
+            currentTheme={theme} 
+            onThemeChange={handleThemeChange} 
+            variant="compact" 
+          />
+          <VoiceControl />
+        </div>
       </header>
 
       {/* Bottom Mobile Navigation Bar for Honor/Android */}
@@ -1396,6 +1685,17 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
           ))}
         </div>
         
+        <div className="pt-4 pb-2 border-t border-slate-800/80 mb-2">
+          <div className="text-[9px] font-black uppercase tracking-widest text-slate-400 mb-2 px-1">
+            Modo Visual
+          </div>
+          <ThemeSelector 
+            currentTheme={theme} 
+            onThemeChange={handleThemeChange} 
+            variant="compact" 
+          />
+        </div>
+
         <VoiceControl />
       </nav>
 
@@ -1404,7 +1704,15 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
         {/* GLOBAL HEADER & STATUS */}
         {(view === 'dashboard' || view === 'knowledge' || view === 'backtesting') && (
           <div className="mb-10 space-y-10">
-             <IntegrityStatus />
+             <IntegrityStatus 
+               onForceSyncFirestore={handleManualFirestoreSync}
+               isFirestoreSyncing={isFirestoreSyncing}
+               lastSyncTime={lastManualSyncTime}
+               totalDrawsCount={data.length}
+               latestDrawNumber={data.length > 0 ? data[0].CONCURSO : 12206}
+               currentTheme={theme}
+               onThemeChange={handleThemeChange}
+             />
              <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
                   <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter leading-none uppercase">
@@ -1412,12 +1720,25 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                   </h1>
                   <p className="text-slate-500 font-bold text-[10px] uppercase tracking-[0.3em] mt-2">Terminal de Telemetría y Metrología de Precisión</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="bg-amber-500/10 text-amber-500 px-4 py-2 rounded-full border border-amber-500/20 text-[9px] font-black uppercase tracking-widest flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 bg-amber-500 rounded-full animate-pulse"></span>
-                    Bypass de Azar: Activo
+                <div className="flex flex-wrap items-center gap-3">
+                  <ThemeSelector 
+                    currentTheme={theme} 
+                    onThemeChange={handleThemeChange} 
+                    variant="full" 
+                  />
+                  <button
+                    onClick={handleManualFirestoreSync}
+                    disabled={isFirestoreSyncing}
+                    className="bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 hover:text-amber-300 px-4 py-2 rounded-full border border-amber-500/30 text-[9px] font-black uppercase tracking-widest flex items-center gap-2 transition-all cursor-pointer shadow-lg shadow-amber-500/10 active:scale-95 disabled:opacity-50"
+                    title="Forzar actualización manual de Firestore"
+                  >
+                    <i className={`fas fa-rotate text-xs ${isFirestoreSyncing ? 'animate-spin text-amber-300' : ''}`}></i>
+                    <span>{isFirestoreSyncing ? 'Sincronizando...' : 'Sync Firestore'}</span>
+                  </button>
+                  <div className="bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-full border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest">
+                    <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block mr-1.5 animate-pulse"></span>
+                    {data.length} Sorteos Verificados
                   </div>
-                  <div className="bg-emerald-500/10 text-emerald-400 px-4 py-2 rounded-full border border-emerald-500/20 text-[9px] font-black uppercase tracking-widest">Tribología V5.0</div>
                   <button 
                     onClick={() => setView(view === 'knowledge' ? 'dashboard' : 'knowledge')}
                     className={`px-4 py-2 rounded-full border text-[9px] font-black uppercase tracking-widest transition-all ${view === 'knowledge' ? 'bg-amber-500 border-amber-400 text-slate-950' : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'}`}
@@ -1427,6 +1748,30 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                   </button>
                 </div>
              </header>
+          </div>
+        )}
+
+        {/* FLOATING SYNC TOAST */}
+        {syncFeedback && (
+          <div className="fixed bottom-20 md:bottom-8 right-6 z-50 bg-slate-900/95 backdrop-blur-xl border-2 border-emerald-500/80 text-white px-6 py-4 rounded-3xl shadow-[0_10px_40px_rgba(16,185,129,0.3)] flex items-center gap-4 animate-in slide-in-from-bottom-5 duration-300">
+            <div className="w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center text-slate-950 font-black shadow-lg shadow-emerald-500/30 shrink-0">
+              <i className="fas fa-check text-lg"></i>
+            </div>
+            <div>
+              <h5 className="font-black text-xs uppercase tracking-widest text-emerald-400 flex items-center gap-2">
+                <span>Sincronización Firestore Exitosa</span>
+                <span className="text-[9px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 font-mono">100% OK</span>
+              </h5>
+              <p className="text-[11px] text-slate-300 font-mono mt-0.5">
+                {syncFeedback.count} sorteos sincronizados • Último: Sorteo #{syncFeedback.topDraw} ({syncFeedback.timestamp})
+              </p>
+            </div>
+            <button 
+              onClick={() => setSyncFeedback(null)}
+              className="text-slate-500 hover:text-white ml-2 text-xs p-1"
+            >
+              <i className="fas fa-times"></i>
+            </button>
           </div>
         )}
 
@@ -1560,24 +1905,41 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
-                   <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Último Resultado #11917</span>
-                   <div className="flex gap-2 mt-4 flex-wrap">
-                      {[10, 14, 15, 24, 26].map(n => <NumberBall key={n} number={n} size="sm" />)}
+                   <div className="flex items-center justify-between">
+                     <div className="flex items-center gap-2">
+                       <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">
+                         Último Resultado #{data[0]?.CONCURSO || '---'}
+                       </span>
+                       <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-[8px] font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                         LIVE
+                       </span>
+                     </div>
+                     <span className="text-[9px] font-bold text-amber-500/80 uppercase">{data[0]?.FECHA || ''}</span>
                    </div>
+                   <div className="flex gap-2 mt-4 flex-wrap">
+                      {data[0] ? [data[0].R1, data[0].R2, data[0].R3, data[0].R4, data[0].R5].map(n => <NumberBall key={n} number={n} size="sm" />) : null}
+                   </div>
+                   {data[0]?.ordenSalida && (
+                     <div className="mt-3 text-[9px] text-slate-400 font-mono flex items-center gap-1.5">
+                       <span className="text-amber-500/80 font-bold">✦ Salida Real:</span>
+                       <span>{data[0].ordenSalida.join(' - ')}</span>
+                     </div>
+                   )}
                 </div>
                 <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-xl relative group">
                    <div className="absolute top-0 right-0 p-4">
                       <span className="bg-amber-500 text-slate-950 text-[8px] font-black px-2 py-1 rounded uppercase animate-pulse">Impacto Inminente</span>
                    </div>
-                   <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Vector "Martillo" V8.0</span>
+                   <span className="text-[10px] font-black uppercase text-slate-500 tracking-widest">Vector "Martillo" V12.0</span>
                    <div className="flex gap-2 mt-4 flex-wrap">
-                      {[2, 10, 14, 24, 26].map(n => (
-                        <div key={n} className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-sm border-2 ${n === 26 ? 'bg-amber-600 border-amber-400 text-white shadow-lg shadow-amber-600/40' : n === 2 ? 'bg-amber-500/20 border-amber-500/40 text-amber-500' : 'bg-slate-800 border-slate-700 text-slate-300'}`}>
+                      {(holyGrail?.numbers || [1, 8, 10, 15, 20]).map(n => (
+                        <div key={n} className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-sm border-2 ${n === 26 ? 'bg-amber-600 border-amber-400 text-white shadow-lg shadow-amber-600/40' : [1, 8, 10, 15, 20].includes(n) ? 'bg-amber-500/20 border-amber-500/40 text-amber-500' : 'bg-slate-800 border-slate-700 text-slate-300'}`}>
                           {n}
                         </div>
                       ))}
                    </div>
-                   <div className="mt-3 text-[9px] text-amber-500/80 uppercase font-bold tracking-tighter">Anclaje: 10-26 | Escolta: 14 | Bloque: 02-24</div>
+                   <div className="mt-3 text-[9px] text-amber-500/80 uppercase font-bold tracking-tighter">Sintonía Triple Fusión: 85.4% | CDMX: 777 hPa</div>
                 </div>
                 <div className="bg-slate-900 border border-slate-800 p-8 rounded-[2.5rem] shadow-xl flex items-center justify-between">
                    <div>
@@ -1620,7 +1982,7 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
              </div>
 
              <TombolaHeatmap 
-               data={Object.entries(thermalScores).map(([num, score]) => ({ num: parseInt(num), score }))} 
+               data={tombolaHeatmapData} 
                activeNumbers={suggestion}
                malwareInfections={malwareInfections}
              />
@@ -1756,6 +2118,10 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
              <MarkovHeatmap data={data} />
 
              <SingularidadMecanica />
+
+             <AductoScatterMatrix data={data} deepSimResults={deepSimResults} />
+
+             <HourlyCorrelationMatrix data={data} />
 
              {vortexData && (
                <div className="bg-slate-900 border border-slate-800 p-10 rounded-[3rem] shadow-2xl space-y-8 animate-in fade-in slide-in-from-bottom-10 duration-700">
@@ -1907,6 +2273,9 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                   </div>
                 </div>
 
+                {/* GRÁFICO DE TENDENCIA DE ROI PROYECTADO PLAN BARCEL */}
+                <BarcelRoiTrendChart weeklyPlan={weeklyPlan} />
+
                 {/* THE 7-DAY PARRILLA GRID */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                   {weeklyPlan.map((p, idx) => (
@@ -2054,7 +2423,31 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                       {poolSummary ? `${poolSummary.avgRoi.toFixed(1)}%` : '---'}
                     </span>
                  </div>
-                  <div className="flex gap-4">
+                  <div className="flex flex-wrap gap-4">
+                    <button 
+                      onClick={() => generateForensicReportPDF({
+                        historicalData: data,
+                        myTickets,
+                        ticketStats,
+                        suggestion,
+                        genMode,
+                        holyGrail,
+                        deepSimResults,
+                        scenarioResults,
+                        debtResults,
+                        markovContrast,
+                        anticipationResult,
+                        quantum5,
+                        simResult,
+                        certeza,
+                        antifragilityResult,
+                        biasAnalysis,
+                      })}
+                      className="bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-500/30 px-8 py-5 rounded-3xl font-black uppercase text-[10px] tracking-widest flex items-center gap-2 transition-all shadow-xl active:scale-95"
+                    >
+                      <i className="fas fa-file-pdf text-red-500 text-sm"></i>
+                      Descargar Reporte PDF
+                    </button>
                     <button onClick={handleClearWallet} className="bg-rose-900/30 hover:bg-rose-600 text-rose-500 hover:text-white px-8 py-5 rounded-3xl font-black uppercase text-[10px] tracking-widest transition-all">Vaciar Cartera</button>
                     <button onClick={() => setView('generator')} className="bg-amber-600 hover:bg-amber-500 text-white px-10 py-5 rounded-3xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-amber-600/30 transition-all active:scale-95">Afinar para Mañana</button>
                   </div>
@@ -2438,14 +2831,41 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                             <i className="fas fa-microchip text-7xl text-red-500/10"></i>
                           </div>
 
-                          <div className="flex items-center justify-between border-b border-red-500/20 pb-6 relative z-10">
+                          <div className="flex flex-wrap items-center justify-between border-b border-red-500/20 pb-6 relative z-10 gap-4">
                             <h4 className="text-red-500 font-black text-xl uppercase italic tracking-tighter flex items-center gap-3">
                               <i className="fas fa-radiation"></i>
                               Gabinete de Simulación V10.0
                             </h4>
-                            <span className="bg-red-500/10 text-red-500 text-[10px] font-black px-4 py-2 rounded-full border border-red-500/30 uppercase tracking-widest">
-                              Monte Carlo: 100k Iteraciones
-                            </span>
+                            <div className="flex items-center gap-3">
+                              <button
+                                onClick={() => generateForensicReportPDF({
+                                  historicalData: data,
+                                  myTickets,
+                                  ticketStats,
+                                  suggestion,
+                                  genMode,
+                                  holyGrail,
+                                  deepSimResults,
+                                  scenarioResults,
+                                  debtResults,
+                                  markovContrast,
+                                  anticipationResult,
+                                  quantum5,
+                                  simResult,
+                                  certeza,
+                                  antifragilityResult,
+                                  biasAnalysis,
+                                })}
+                                className="bg-red-600 hover:bg-red-500 text-white font-black text-[10px] uppercase tracking-widest px-5 py-2.5 rounded-2xl flex items-center gap-2 shadow-lg shadow-red-600/30 transition-all active:scale-95"
+                                title="Descargar reporte forense en PDF con el resumen de la simulación Monte Carlo y los vectores"
+                              >
+                                <i className="fas fa-file-pdf"></i>
+                                Descargar Reporte PDF
+                              </button>
+                              <span className="bg-red-500/10 text-red-500 text-[10px] font-black px-4 py-2 rounded-full border border-red-500/30 uppercase tracking-widest">
+                                Monte Carlo: 100k
+                              </span>
+                            </div>
                           </div>
 
                           <div className="bg-black/60 border border-red-500/20 p-10 rounded-[2.5rem] relative z-10">
@@ -2570,12 +2990,58 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
 
                        {deepAnalysis && (
                          <div className="mt-10 p-10 bg-slate-950 border border-amber-500/20 rounded-[3rem] text-left animate-in fade-in slide-in-from-top-4 duration-700">
-                            <h4 className="text-amber-500 font-black text-xs uppercase tracking-[0.4em] mb-6 flex items-center gap-3 italic">
-                               <i className="fas fa-microchip"></i> Auditoría de Deuda de Masa
-                            </h4>
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 border-b border-slate-900 pb-6">
+                              <div>
+                                <h4 className="text-amber-500 font-black text-xs uppercase tracking-[0.4em] flex items-center gap-3 italic">
+                                   <i className="fas fa-microchip"></i> Auditoría de Deuda de Masa (Deep Analysis)
+                                </h4>
+                                <div className="flex items-center gap-2 mt-1.5">
+                                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-mono text-[9px] font-bold uppercase tracking-wider">
+                                    <i className="fas fa-shield-alt text-[8px]"></i> DocSec SHA-256 Verificado
+                                  </span>
+                                  <span className="text-[10px] text-slate-500 font-mono">
+                                    Sorteo #{data[0]?.CONCURSO || '---'}
+                                  </span>
+                                </div>
+                              </div>
+
+                              <div className="flex flex-wrap items-center gap-2.5">
+                                <button
+                                  onClick={handleCopyDocSecText}
+                                  className="px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-800 hover:border-slate-700 rounded-2xl font-black text-[9px] uppercase tracking-widest transition-all flex items-center gap-2"
+                                  title="Copiar texto formateado completo con Hash DocSec"
+                                >
+                                  <i className="fas fa-copy text-amber-500"></i>
+                                  <span>Copiar DocSec</span>
+                                </button>
+                                <button
+                                  onClick={handleDownloadDeepAnalysisDocSec}
+                                  disabled={isDocSecDownloading}
+                                  className="px-5 py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-2xl font-black text-[9px] uppercase tracking-widest shadow-lg shadow-amber-600/20 transition-all flex items-center gap-2 active:scale-95 disabled:opacity-50"
+                                  title="Descargar archivo .txt formateado con sello de tiempo y hash criptográfico para control de aciertos"
+                                >
+                                  <i className={`fas ${isDocSecDownloading ? 'fa-spinner fa-spin' : 'fa-file-download'}`}></i>
+                                  <span>{isDocSecDownloading ? 'Exportando...' : 'Descargar TXT DocSec'}</span>
+                                </button>
+                              </div>
+                            </div>
+
+                            {docSecFeedback && (
+                              <div className="mb-6 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-300 font-mono text-xs flex flex-col md:flex-row justify-between items-start md:items-center gap-2 animate-in fade-in">
+                                <div className="flex items-center gap-2">
+                                  <i className="fas fa-check-circle text-amber-400"></i>
+                                  <span>Archivo descargado: <strong>{docSecFeedback.filename}</strong></span>
+                                </div>
+                                <div className="text-[10px] text-amber-400/80">
+                                  Hash: <span className="text-white font-bold">{docSecFeedback.hash.substring(0, 16)}...</span>
+                                </div>
+                              </div>
+                            )}
+
                             <div className="markdown-body prose prose-invert max-w-none text-slate-300 italic leading-relaxed">
                                <Markdown>{deepAnalysis}</Markdown>
                             </div>
+
                             {deepAnalysis.includes('"numbers"') && (
                               <div className="mt-8 pt-8 border-t border-slate-800 flex justify-center">
                                 <button 
@@ -2969,6 +3435,9 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                  biasAnalysis={biasAnalysis}
                  antifragilityResult={antifragilityResult}
                  causalDiagnostics={causalDiagnostics}
+                 myTickets={myTickets}
+                 ticketStats={ticketStats}
+                 deepAnalysis={deepAnalysis}
                />
             </div>
            </div>
@@ -2983,13 +3452,24 @@ Para las 9 PM de hoy, he ajustado el Reactor con la nueva telemetría. Nuestro v
                   <p className="text-slate-400 font-mono text-sm uppercase italic">Auditoría Real: Cierre de Sorteos. Próximo: Sorteo 9:00 PM</p>
                 </div>
                 
-                <div className="bg-amber-600/[0.04] border border-amber-500/30 p-6 rounded-3xl max-w-xl text-left">
-                  <div className="flex items-center gap-2 text-amber-500 font-black text-xs uppercase tracking-wider italic mb-2">
-                    <i className="fas fa-history"></i> RELACIÓN DE DESFASE (1-STEP DELAY)
+                <div className="flex flex-wrap items-center gap-4">
+                  <button
+                    onClick={handleManualFirestoreSync}
+                    disabled={isFirestoreSyncing}
+                    className="bg-amber-500 hover:bg-amber-400 text-slate-950 px-6 py-4 rounded-3xl font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-amber-500/20 active:scale-95 flex items-center gap-3 cursor-pointer disabled:opacity-50"
+                  >
+                    <i className={`fas fa-rotate ${isFirestoreSyncing ? 'animate-spin' : ''}`}></i>
+                    <span>{isFirestoreSyncing ? 'Sincronizando...' : 'Forzar Sincronización Firestore'}</span>
+                  </button>
+
+                  <div className="bg-amber-600/[0.04] border border-amber-500/30 p-6 rounded-3xl max-w-xl text-left">
+                    <div className="flex items-center gap-2 text-amber-500 font-black text-xs uppercase tracking-wider italic mb-2">
+                      <i className="fas fa-history"></i> RELACIÓN DE DESFASE (1-STEP DELAY)
+                    </div>
+                    <p className="text-slate-400 text-[11px] leading-relaxed italic">
+                      La física de fluidos de la tómbola se modela como un sistema dinámico: <strong>Inercia del Sorteo Anterior [X] ➡️ Vector de Ataque Estimado para el Sorteo Próximo [X+1]</strong>.
+                    </p>
                   </div>
-                  <p className="text-slate-400 text-[11px] leading-relaxed italic">
-                    La física de fluidos de la tómbola se modela como un sistema dinámico: <strong>Inercia del Sorteo Anterior [X] ➡️ Vector de Ataque Estimado para el Sorteo Próximo [X+1]</strong>.
-                  </p>
                 </div>
               </header>
 
