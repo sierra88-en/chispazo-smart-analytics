@@ -1,5 +1,24 @@
 {
-  "name": "QUANTUM-GOD-X V10.0: Gabinete de Simulación Profunda",
-  "description": "Terminal de ingeniería forense y telemetría avanzada para la predicción de lotería Chispazo. Basado en pesajes de esferas, cinética de fluidos y simulaciones Monte Carlo de alta fidelidad.",
+  "name": "Búnker Engine - Probabilistic Pattern Analytics",
+  "description": "Entorno de análisis estadístico y modelado probabilístico para secuencias numéricas pseudoaleatorias, con integración de Google AI Studio / Gemini API para detección de anomalías, simulación Monte Carlo y cadenas de Markov.",
+  "author": "Enrique Ángel Sierra Ruiz",
+  "stack": [
+    "GNU/Linux",
+    "Bash Scripting",
+    "Python",
+    "Git/GitHub",
+    "Vercel",
+    "Pandas",
+    "NumPy",
+    "Markov Chains",
+    "Monte Carlo Simulation",
+    "Google AI Studio / Gemini"
+  ],
+  "frameworksAndStandards": [
+    "NIST CSF",
+    "OWASP",
+    "ISO 27001"
+  ],
+  "date": "Octubre 2026",
   "requestFramePermissions": []
 }

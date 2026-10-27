@@ -1,7 +1,7 @@
 {
-  "name": "chispazo-ai-pro---lottery-analytics",
+  "name": "bunker-engine-probabilistic-pattern-analytics",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
